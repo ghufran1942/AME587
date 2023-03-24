@@ -4,8 +4,6 @@
 //    Date: 3/23/2023
 
 #include <xc.h>     // header file
-#include <math.h>   // header file
-#include <stdlib.h>
 #include <pic16f690.h>
 
 #define _XTAL_FREQ 8000000
@@ -19,8 +17,8 @@ int main()  // Start of the main function
 {
     //    Initialization
     OSCCON = 0b01110000;    // Setting Oscillator to do 8MHz
-    TRISAbits.TRISA0 = 0;   // PORTA0 as output
-    TRISBbits.TRISB4 = 1;   // PORTB4 as input
+    TRISAbits.TRISA0 = 0;   // PORTA0 as output => Trigger
+    TRISBbits.TRISB4 = 1;   // PORTB4 as input => 
     T1CONbits.TMR1ON = 1;   // Enable Timer1
     return 0;
     
@@ -33,7 +31,7 @@ float US_distance()
 {
     // Signal Initialization
     TRISAbits.TRISA0 = 1;
-    __delay_us = 10;
+    __delay_us(10);
     TRISAbits.TRISA0 = 0;
     
     // Start counting
@@ -45,12 +43,3 @@ float US_distance()
 
     return duration * 0.034 / 2;
 }
-
-//int Initialization()
-//{
-//    OSCCON = 0b01110000;    // Setting Oscillator to do 8MHz
-//    TRISAbits.TRISA0 = 0;   // PORTA0 as output
-//    TRISBbits.TRISB4 = 1;   // PORTB4 as input
-//    T1CONbits.TMR1ON = 1;   // Enable Timer1
-//    return 0;
-//}
