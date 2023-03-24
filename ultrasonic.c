@@ -17,7 +17,12 @@ float US_distance();
 
 int main()  // Start of the main function
 {
-    Initialization();            // Call Initialization
+    //    Initialization
+    OSCCON = 0b01110000;    // Setting Oscillator to do 8MHz
+    TRISAbits.TRISA0 = 0;   // PORTA0 as output
+    TRISBbits.TRISB4 = 1;   // PORTB4 as input
+    T1CONbits.TMR1ON = 1;   // Enable Timer1
+    return 0;
     
     while(1){
         US_distance();
@@ -41,11 +46,11 @@ float US_distance()
     return duration * 0.034 / 2;
 }
 
-int Initialization()
-{
-    OSCCON = 0b01110000;    // Setting Oscillator to do 8MHz
-    TRISAbits.TRISA0 = 0;   // PORTA0 as output
-    TRISBbits.TRISB4 = 1;   // PORTB4 as input
-    T1CONbits.TMR1ON = 1;   // Enable Timer1
-    return 0;
-}
+//int Initialization()
+//{
+//    OSCCON = 0b01110000;    // Setting Oscillator to do 8MHz
+//    TRISAbits.TRISA0 = 0;   // PORTA0 as output
+//    TRISBbits.TRISB4 = 1;   // PORTB4 as input
+//    T1CONbits.TMR1ON = 1;   // Enable Timer1
+//    return 0;
+//}
