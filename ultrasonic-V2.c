@@ -73,11 +73,11 @@ float measure_distance()
 void Send(unsigned char x)          // Send 1 Byte to MATLAB via RS232
 {
     TXREG = x;                      // Move Byte to Transmit Data Register
-    while (!TRMT);        // Wait until TXREG is empty (TXSTA reg)
+    while (!TRMT);                  // Wait until TXREG is empty (TXSTA reg)
 }
 
-unsigned char Receive(void)     // Receive 1 Byte from MATLAB via RS232
+unsigned char Receive(void)         // Receive 1 Byte from MATLAB via RS232
 {
-    while (!RCIF);     // Wait for RCREG to fill (PIR1 reg)
-    return RCREG;               // Move Receive Data Register to func output  
+    while (!RCIF);                  // Wait for RCREG to fill (PIR1 reg)
+    return RCREG;                   // Move Receive Data Register to func output  
 }
