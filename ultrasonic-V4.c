@@ -14,7 +14,8 @@
 volatile unsigned short timer0_overflow_count = 0;
 
 // Function Declarations
-float measure_distance();
+float measure_duration();
+float calcualte_distance(float duration);
 void Send(unsigned char x);
 unsigned char Receive(void);
 void __interrupt() ISR(void);
@@ -56,11 +57,18 @@ int main()
     
     __delay_ms(100);                // Wait for serial communication to stabilize
     
+    float duration;
     while(1)
     {
         __delay_us(20);
+        float compare = duration / measure_duration();
+        if(compare > 1.1 || compare < 0.9){
+            continue;
+        }
 
-        float distance = measure_distance();
+        duration = measure_duration();
+        float distance = calcualte_distance(duration);
+        
         char *bytes = (char*)(&distance);
         for(int i=0; i < 4;i++)
         {
@@ -69,15 +77,16 @@ int main()
 
         PORTC = Receive();
     }
+    
     return 0;
 }
 
-float measure_distance()
+float measure_duration()
 {
     // Signal Initialization
-    TRISAbits.TRISA0 = 1;
+    RA0 = 1;
     __delay_us(10);
-    TRISAbits.TRISA0 = 0;
+    RA0 = 0;
 
     TMR1 = 0;                   // Reset Timer1
     T1CONbits.TMR1ON = 1;       // Enable Timer1
@@ -103,7 +112,8 @@ float measure_distance()
 
     unsigned short duration = TMR1; // Read the timer value
 
-    return duration * 0.034 / 2;
+    // return duration * 0.034 / 2;
+    return duration;
 }
 
 void Send(unsigned char x)      // Send 1 Byte to MATLAB via RS232
@@ -130,3 +140,6 @@ void __interrupt() ISR(void)
     }
 }
 
+float calcualte_distance(float duration){
+    return duration * 0.0135 / 2;
+}

@@ -75,9 +75,9 @@ int main()
 float measure_distance()
 {
     // Signal Initialization
-    TRISAbits.TRISA0 = 1;
+    RA0 = 1;
     __delay_us(10);
-    TRISAbits.TRISA0 = 0;
+    RA0 = 0;
 
     TMR1 = 0;                   // Reset Timer1
     T1CONbits.TMR1ON = 1;       // Enable Timer1

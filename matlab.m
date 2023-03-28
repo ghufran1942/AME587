@@ -6,7 +6,7 @@ fopen(S); % Open serial port
 figure('units','normalized','outerposition',[0.2 0.2 0.5 0.7]); set(gcf,'color','w'); 
 Plot = animatedline('LineWidth',1,'Color','b'); grid on; box on;
 title('Serial Data','FontSize',12); xlabel('Elapsed Time (s)','FontSize',9); ylabel('Amplitude (units)','FontSize',9)
-Time = zeros(1,1000); Error = zeros(size(Time)); Filtered  = zeros(size(Time)); Controlled = zeros(size(Time)); 
+Time = zeros(1,10000); Error = zeros(size(Time)); Filtered  = zeros(size(Time)); Controlled = zeros(size(Time)); 
 fwrite(S,0,'async'); tic % Start the communication and the stopwatch timer
 for i = 1:length(Time)
    Error(i) = fread(S,1,'float32');
