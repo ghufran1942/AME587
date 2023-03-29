@@ -5,18 +5,19 @@
 
 #include <xc.h>
 #include <pic16f690.h>
+#include <stdint.h>
 
 #define _XTAL_FREQ 8000000
 
 #pragma config FOSC = INTRCIO, WDTE = OFF, PWRTE = OFF, MCLRE = ON, CP = OFF, CPD = OFF, BOREN = OFF, IESO = OFF, FCMEN = OFF
 
 // Global variable
-volatile unsigned short timer0_overflow_count = 0;
+volatile uint8_t timer0_overflow_count = 0;
 
 // Function Declarations
 int initialization();
-float measure_duration();
-float calcualte_distance(float duration);
+uint16_t measure_duration();
+float calcualte_distance(uint16_t duration);
 void Send(unsigned char x);
 unsigned char Receive(void);
 void __interrupt() ISR(void);
@@ -27,15 +28,15 @@ int main()
     
     __delay_ms(100);                // Wait for serial communication to stabilize
     
-    int prev_duration = -1;
+    uint16_t prev_duration = -1;
     while(1)
     {
         __delay_us(20);
-        int curr_duration = measure_duration();
+        uint16_t curr_duration = measure_duration();
         if (prev_duration != -1){ // Only compare if there is a valid previous value
-            int range = 0.1 * prev_duration; // depending on the contanst 0.1 the range changes.
-            int lower_bound = prev_duration - range;
-            int upper_bound = prev_duration + range;
+            uint8_t range = 0.1 * prev_duration; // depending on the contanst 0.1 the range changes.
+            uint16_t lower_bound = prev_duration - range;
+            uint16_t upper_bound = prev_duration + range;
             if (curr_duration >= lower_bound && curr_duration <= upper_bound) {
                 continue;
             }
@@ -57,7 +58,7 @@ int main()
     return 0;
 }
 
-float measure_duration()
+uint16_t measure_duration()
 {
     // Signal Initialization
     RA0 = 1;
@@ -71,20 +72,20 @@ float measure_duration()
     timer0_overflow_count = 0;  // Reset the overflow count
     TMR0 = 0;                   // Reset Timer0 value
 
-    while (PORTBbits.RB4 == 0 && timer0_overflow_count < 10) {} // Wait for the echo pulse to start
+    while (PORTBbits.RB4 == 0 && timer0_overflow_count < 20) {} // Wait for the echo pulse to start
 
-    if (timer0_overflow_count >= 10) {
+    if (timer0_overflow_count >= 20) {
         T1CONbits.TMR1ON = 0;   // Disable Timer1
         return 0;               // If timed out, return 0
     }
 
     TMR1 = 0;                   // Reset the timer
 
-    while (PORTBbits.RB4 == 1 && timer0_overflow_count < 10) {} // Wait for the echo pulse to end
+    while (PORTBbits.RB4 == 1 && timer0_overflow_count < 20) {} // Wait for the echo pulse to end
 
     T1CONbits.TMR1ON = 0;       // Disable Timer1
 
-    if (timer0_overflow_count >= 10) return 0; // If timed out, return 0
+    if (timer0_overflow_count >= 20) return 0; // If timed out, return 0
 
     unsigned short duration = TMR1; // Read the timer value
 
@@ -116,7 +117,7 @@ void __interrupt() ISR(void)
     }
 }
 
-float calcualte_distance(float duration){
+float calcualte_distance(uint16_t duration){
     return duration * 0.0135 / 2; // I think this should calcualte the distance in inches
 }
 
@@ -130,13 +131,11 @@ int initialization(){
     TRISBbits.TRISB4 = 1;       // PORTB4 as input => Echo
 
     // Timer1 configuration (for measuring echo pulse duration)
-    T1CONbits.T1CKPS = 0b11;    // Set Timer1 prescaler to 1:8
     T1CONbits.TMR1CS = 0;       // Select internal clock (FOSC/4)
     T1CONbits.TMR1ON = 0;       // Disable Timer1 (it will be enabled in the US_distance function)
 
     // Timer0 configuration (for handling timeout)
     OPTION_REGbits.PSA = 0;     // Assign prescaler to Timer0
-    OPTION_REGbits.PS = 0b010;  // Set the prescaler to 1:8
     OPTION_REGbits.T0CS = 0;    // Select internal instruction cycle clock
     OPTION_REGbits.T0SE = 0;    // Increment on low-to-high transition on T0CKI pin
     TMR0 = 0;                   // Initialize Timer0 value
