@@ -57,17 +57,23 @@ int main()
     
     __delay_ms(100);                // Wait for serial communication to stabilize
     
-    float duration;
+    float prev_duration = -1.0;
     while(1)
     {
         __delay_us(20);
-        float compare = duration / measure_duration();
-        if(compare > 1.1 || compare < 0.9){
-            continue;
+        float curr_duration = measure_duration();
+        if (prev_duration != -1.0){ // Only compare if there is a valid previous value
+            float range = 0.1 * prev_duration; // depending on the contanst 0.1 the range changes.
+            float lower_bound = prev_duration - range;
+            float upper_bound = prev_duration + range;
+            if (curr_duration >= lower_bound && curr_duration <= upper_bound) {
+                continue;
+            }
         }
-
-        duration = measure_duration();
-        float distance = calcualte_distance(duration);
+        
+        prev_duration = curr_duration; // Store the current duration value as the previous duration value for the next iteration
+        
+        float distance = calcualte_distance(curr_duration);
         
         char *bytes = (char*)(&distance);
         for(int i=0; i < 4;i++)
