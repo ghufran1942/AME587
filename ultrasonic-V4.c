@@ -147,5 +147,5 @@ void __interrupt() ISR(void)
 }
 
 float calcualte_distance(float duration){
-    return duration * 0.0135 / 2;
+    return duration * 0.0135 / 2; // I think this should calcualte the distance in inches
 }

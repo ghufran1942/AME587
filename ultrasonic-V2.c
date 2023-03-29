@@ -56,9 +56,9 @@ int main()  // Start of the main function
 float measure_distance()
 {
     // Signal Initialization
-    TRISAbits.TRISA0 = 1;
+    RA0 = 1;
     __delay_us(10);
-    TRISAbits.TRISA0 = 0;
+    RA0 = 0;
 
     TMR1 = 0;
     // Start counting
