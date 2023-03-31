@@ -16,6 +16,8 @@ float US_distance();
 void Send(unsigned char x);
 unsigned char Receive(void);
 
+
+
 int main()  // Start of the main function
 {
     //    Initialization
