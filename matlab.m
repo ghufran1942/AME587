@@ -15,7 +15,7 @@ for i = 1:length(Time)
    fwrite(S,Controlled(i),'uint8'); % Send 1 byte back to the Microcontroller
    Time(i) = toc;
    addpoints(Plot,Time(i),Error(i)); 
-   axis([toc-10 toc+1 -10 30]); % Axis based on elapsed time
+   axis([toc-10 toc+1 -10 10]); % Axis based on elapsed time
    pause(0.01);
 end
 fclose(S);

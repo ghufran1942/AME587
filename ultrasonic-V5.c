@@ -34,16 +34,15 @@ int main()
         __delay_us(20);
         uint16_t curr_duration = measure_duration();
         if (prev_duration != -1){ // Only compare if there is a valid previous value
-            uint8_t range = 0.1 * prev_duration; // depending on the contanst 0.1 the range changes.
+            uint8_t range = 0.1 * prev_duration; // depending on the constant 0.1 the range changes.
             uint16_t lower_bound = prev_duration - range;
             uint16_t upper_bound = prev_duration + range;
             if (curr_duration >= lower_bound && curr_duration <= upper_bound) {
-                continue;
+                curr_duration = 7500;
+            }else{
+                prev_duration = curr_duration; // Store the current duration value as the previous duration value for the next iteration
             }
-        }
-        
-        prev_duration = curr_duration; // Store the current duration value as the previous duration value for the next iteration
-        
+        }       
         float distance = calcualte_distance(curr_duration);
         
         char *bytes = (char*)(&distance);
@@ -136,6 +135,9 @@ int initialization(){
 
     // Timer0 configuration (for handling timeout)
     OPTION_REGbits.PSA = 0;     // Assign prescaler to Timer0
+    OPTION_REGbits.PS0 = 0;
+    OPTION_REGbits.PS1 = 1;
+    OPTION_REGbits.PS2 = 0;
     OPTION_REGbits.T0CS = 0;    // Select internal instruction cycle clock
     OPTION_REGbits.T0SE = 0;    // Increment on low-to-high transition on T0CKI pin
     TMR0 = 0;                   // Initialize Timer0 value
