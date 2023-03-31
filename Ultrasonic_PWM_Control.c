@@ -31,6 +31,7 @@ int main(){
     PORTC = 0;
     CCPR1L = 0;
     
+    uint16_t prev_duration = -1;
     while (1) {
         __delay_us(20);
 
