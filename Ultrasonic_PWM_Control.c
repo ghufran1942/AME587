@@ -31,27 +31,28 @@ int main(){
     PORTC = 0;
     CCPR1L = 0;
     
-    uint16_t prev_duration = -1;
+//    uint16_t prev_duration = -1;
     while (1) {
         __delay_us(20);
 
         uint16_t curr_duration = measure_duration();
-        if (prev_duration != -1){ // Only compare if there is a valid previous value
-            uint8_t range = 0.1 * prev_duration; // depending on the constant 0.1 the range changes.
-            uint16_t lower_bound = prev_duration - range;
-            uint16_t upper_bound = prev_duration + range;
-            if (curr_duration >= lower_bound && curr_duration <= upper_bound) {
-                float distance = calcualte_distance(curr_duration);
-                char *bytes = (char*)(&distance);
-                for(int i=0; i < 4;i++){
-                    Send(bytes[i]);
-                }
+//        if (prev_duration != -1){ // Only compare if there is a valid previous value
+//            uint8_t range = 0.1 * prev_duration; // depending on the constant 0.1 the range changes.
+//            uint16_t lower_bound = prev_duration - range;
+//            uint16_t upper_bound = prev_duration + range;
+//            if (curr_duration >= lower_bound && curr_duration <= upper_bound) {
+//                float distance = calcualte_distance(curr_duration);
+        char *bytes = (char*)(&curr_duration);
+        for(int i=0; i < 4;i++){
+            Send(bytes[i]);
+        }
+//                }
 
                 
-            }else{
-                prev_duration = curr_duration; // Store the current duration value as the previous duration value for the next iteration
-            }
-        }       
+//            }else{
+//                prev_duration = curr_duration; // Store the current duration value as the previous duration value for the next iteration
+//            }
+//        }       
         
         //Toggle LEDs/motor 1
         CCPR1L = Receive();
@@ -93,9 +94,9 @@ uint16_t measure_duration()
     return duration;
 }
 
-float calcualte_distance(uint16_t duration){
-    return duration * 0.0135 / 2; // I think this should calcualte the distance in inches
-}
+//float calcualte_distance(uint16_t duration){
+//    return duration * 0.0135 / 2; // I think this should calculate the distance in inches
+//}
 
 void Send(unsigned char x)            // Send 1 Byte to MATLAB via RS232
 {
