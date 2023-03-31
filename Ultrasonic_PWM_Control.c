@@ -12,8 +12,19 @@
 
 #pragma config FOSC = INTRCIO, WDTE = OFF, PWRTE = OFF, MCLRE = ON, CP = OFF, CPD = OFF, BOREN = OFF, IESO = OFF, FCMEN = OFF
 
+// Global variable
+volatile uint8_t timer0_overflow_count = 0;
+
+// Function Declarations
+int initialization();
+uint16_t measure_duration();
+float calcualte_distance(uint16_t duration);
+void Send(unsigned char x);
+unsigned char Receive(void);
+void __interrupt() ISR(void);
+
 int main(){
-    Initialization();
+    initialization();
 
     __delay_ms(100);
 
