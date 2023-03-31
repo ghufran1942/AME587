@@ -11,11 +11,9 @@
 
 #pragma config FOSC = INTRCIO, WDTE = OFF, PWRTE = OFF, MCLRE = ON, CP = OFF, CPD = OFF, BOREN = OFF, IESO = OFF, FCMEN = OFF
 
-volatile uint8_t timer0_overflow_count = 0;
-
 //Function Declarations
-unsigned short measure_duration();
-float calculate_distance(uint16_t duration);
+unsigned int measure_duration();
+float calcualte_distance(uint16_t duration);
 void Send(unsigned char x);
 unsigned char Receive(void);
 
@@ -28,9 +26,6 @@ int main()  // Start of the main function
     OSCCON = 0b01110000;            // Setting Oscillator to 8MHz
     TRISAbits.TRISA0 = 0;           // PORTA0 as output => Trigger
     TRISBbits.TRISB4 = 1;           // PORTB4 as input => Echo
-    
-    T1CONbits.TMR1CS = 0;       // Select internal clock (FOSC/4)
-    T1CONbits.TMR1ON = 0;       // Disable Timer1 (it will be enabled in the US_distance function)
     
     OPTION_REGbits.PSA = 0;     // Assign prescaler to Timer0
     OPTION_REGbits.PS0 = 0;
@@ -58,7 +53,6 @@ int main()  // Start of the main function
         __delay_us(20);
 
         uint16_t curr_duration = measure_duration();
-        
         if (prev_duration != -1){ // Only compare if there is a valid previous value
             uint8_t range = 0.1 * prev_duration; // depending on the constant 0.1 the range changes.
             uint16_t lower_bound = prev_duration - range;
@@ -82,19 +76,19 @@ int main()  // Start of the main function
     return 0;
 }
 
-unsigned short measure_duration()
+unsigned int measure_duration()
 {
     // Signal Initialization
     RA0 = 1;
     __delay_us(10);
     RA0 = 0;
 
-    TMR0 = 0;
+    TMR1 = 0;
     // Start counting
 
     while (PORTBbits.RB4 == 0);     // Wait for the echo pulse to start
     while (PORTBbits.RB4 == 1);     // Wait for the echo pulse to end
-    unsigned short duration = TMR0; // Read the timer value
+    unsigned short duration = TMR1; // Read the timer value
 
     return duration;
 }
@@ -111,9 +105,6 @@ unsigned char Receive(void)         // Receive 1 Byte from MATLAB via RS232
     return RCREG;                   // Move Receive Data Register to func output  
 }
 
-float calculate_distance(uint16_t curr_duration){
-    float distance = curr_duration * 0.0135 / 2; // I think this should calculate the distance in inches
-    return distance;
+float calculate_distance(unsigned int duration){
+    return duration * 0.0135 / 2; // I think this should calcualte the distance in inches
 }
-
-

@@ -12,19 +12,8 @@
 
 #pragma config FOSC = INTRCIO, WDTE = OFF, PWRTE = OFF, MCLRE = ON, CP = OFF, CPD = OFF, BOREN = OFF, IESO = OFF, FCMEN = OFF
 
-// Global variable
-volatile uint8_t timer0_overflow_count = 0;
-
-// Function Declarations
-int initialization();
-uint16_t measure_duration();
-float calcualte_distance(uint16_t duration);
-void Send(unsigned char x);
-unsigned char Receive(void);
-void __interrupt() ISR(void);
-
 int main(){
-    initialization();
+    Initialization();
 
     __delay_ms(100);
 
@@ -33,10 +22,25 @@ int main(){
     
     while (1) {
         __delay_us(20);
-        GO = 1;                     // Begin AD Conversion
-        while(GO);          // Wait for ADC to complete
-        Send(ADRESL);                  // Send ADRESL to MATLAB via RS232
-        Send(ADRESH);                  // Send ADRESH to MATLAB via RS232
+
+        uint16_t curr_duration = measure_duration();
+        if (prev_duration != -1){ // Only compare if there is a valid previous value
+            uint8_t range = 0.1 * prev_duration; // depending on the constant 0.1 the range changes.
+            uint16_t lower_bound = prev_duration - range;
+            uint16_t upper_bound = prev_duration + range;
+            if (curr_duration >= lower_bound && curr_duration <= upper_bound) {
+                float distance = calcualte_distance(curr_duration);
+                char *bytes = (char*)(&distance);
+                for(int i=0; i < 4;i++){
+                    Send(bytes[i]);
+                }
+
+                
+            }else{
+                prev_duration = curr_duration; // Store the current duration value as the previous duration value for the next iteration
+            }
+        }       
+        
         //Toggle LEDs/motor 1
         CCPR1L = Receive();
     }
