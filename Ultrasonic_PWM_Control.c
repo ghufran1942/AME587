@@ -21,7 +21,7 @@ uint16_t measure_duration();
 float calcualte_distance(uint16_t duration);
 void Send(unsigned char x);
 unsigned char Receive(void);
-void __interrupt() ISR(void);
+void __interrupt() ISR(void); 
 
 int main(){
     initialization();
