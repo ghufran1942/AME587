@@ -93,6 +93,7 @@ hold
 for k=1:10,plot(xold(k,:));end
 
 plot(x,'r')
+xlim([0 ])
 
 legend({'Training data','Training data','Training data','Training data','Training data','Training data','Training data','Training data','Training data','Training data', 'Trained'})
 
