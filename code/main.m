@@ -14,7 +14,7 @@ Time = zeros(1,5000); Filtered  = zeros(size(Time)); Controlled = zeros(size(Tim
 fwrite(S,0,'async'); tic % Start the communication and the stopwatch timer
 
 Q=rand(20,3);
-for k=1:100 %Number of training targets for the Q-table
+for k=1:100 % Number of Episodes
 
     xT=10;
 
@@ -26,8 +26,8 @@ for k=1:100 %Number of training targets for the Q-table
 
     N=540;
     
-    % Set the initial state using the sensor
-    x(1) = state(); % function needs to be created
+    % Set the initial state
+    x(1) = state();
 
     for i = 1:N
         % Choose an action based on the learned Q-table
@@ -52,10 +52,8 @@ for k=1:100 %Number of training targets for the Q-table
         Q(x(i),a)=Q(x(i),a)+alp*(r(i)-gam*Q(x(i+1),a_next)-Q(x(i),a));
         pause(0.01);
 
-        % Print whether the sensor needs to move left or right
         movement(a);
 
-        % Move to the next iteration if the target is reached
         if at_target
             break;
         end

@@ -1,6 +1,4 @@
 function movement(a)
-    % Control the ultrasonic sensor's movement based on the chosen action
-
     if a == 1
         move_sensor_left();
     elseif a == 2
