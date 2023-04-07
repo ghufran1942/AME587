@@ -16,7 +16,7 @@ volatile uint8_t timer0_overflow_count = 0;
 
 // Function Declarations
 int initialization();
-uint16_t measure_duration();
+float measure_duration();
 float calcualte_distance(uint16_t duration);
 void Send(unsigned char x);
 unsigned char Receive(void);
@@ -43,9 +43,10 @@ int main()
                 prev_duration = curr_duration; // Store the current duration value as the previous duration value for the next iteration
             }
         }       
-        float distance = calcualte_distance(curr_duration);
+//        float distance = calcualte_distance(curr_duration);
+        float duration = curr_duration;
         
-        char *bytes = (char*)(&distance);
+        char *bytes = (char*)(&duration);
         for(int i=0; i < 4;i++)
         {
             Send(bytes[i]);
@@ -57,7 +58,7 @@ int main()
     return 0;
 }
 
-uint16_t measure_duration()
+float measure_duration()
 {
     // Signal Initialization
     RA0 = 1;

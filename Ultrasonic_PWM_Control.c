@@ -17,8 +17,8 @@ volatile uint8_t timer0_overflow_count = 0;
 
 // Function Declarations
 int initialization();
-uint16_t measure_duration();
-float calcualte_distance(uint16_t duration);
+float measure_duration();
+//float calcualte_distance(uint16_t duration);
 void Send(unsigned char x);
 unsigned char Receive(void);
 void __interrupt() ISR(void); 
@@ -35,7 +35,7 @@ int main(){
     while (1) {
         __delay_us(20);
 
-        uint16_t curr_duration = measure_duration();
+        float curr_duration = measure_duration();
 //        if (prev_duration != -1){ // Only compare if there is a valid previous value
 //            uint8_t range = 0.1 * prev_duration; // depending on the constant 0.1 the range changes.
 //            uint16_t lower_bound = prev_duration - range;
@@ -59,7 +59,7 @@ int main(){
     }
 }
 
-uint16_t measure_duration()
+float measure_duration()
 {
     // Signal Initialization
     RA0 = 1;

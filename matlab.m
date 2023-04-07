@@ -9,13 +9,13 @@ title('Serial Data','FontSize',12); xlabel('Elapsed Time (s)','FontSize',9); yla
 Time = zeros(1,10000); Error = zeros(size(Time)); Filtered  = zeros(size(Time)); Controlled = zeros(size(Time)); 
 fwrite(S,0,'async'); tic % Start the communication and the stopwatch timer
 for i = 1:length(Time)
-   Error(i) = fread(S,1,'float32');
+   Error(i) = fread(S,1,'float');
    Filtered(i) = Error(i); % Filter
    Controlled(i) = Filtered(i); % Controller
    fwrite(S,Controlled(i),'uint8'); % Send 1 byte back to the Microcontroller
    Time(i) = toc;
    addpoints(Plot,Time(i),Error(i)); 
-   axis([toc-10 toc+1 -10 10]); % Axis based on elapsed time
+   axis([toc-10 toc+1 -10 10000]); % Axis based on elapsed time
    pause(0.01);
 end
 fclose(S);
