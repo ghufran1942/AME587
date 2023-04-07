@@ -14,6 +14,10 @@ Time = zeros(1,5000); Filtered  = zeros(size(Time)); Controlled = zeros(size(Tim
 fwrite(S,0,'async'); tic % Start the communication and the stopwatch timer
 
 Q=rand(20,3);
+xold = [];
+
+% Training Code
+
 for k=1:100 % Number of Episodes
 
     xT=10;
@@ -24,6 +28,9 @@ for k=1:100 % Number of Episodes
 
     gam=0.1;
 
+    eps0 = 1;
+    eps = eps0;
+
     N=540;
     
     % Set the initial state
@@ -32,12 +39,15 @@ for k=1:100 % Number of Episodes
     for i = 1:N
         % Choose an action based on the learned Q-table
         [~, a] = max(Q(x(i), :));
+
+        movement(a);
         
         % Read the updated state from the sensor
         x(i+1) = state();
 
-        % Determine whether the target has been reached
-        at_target = (abs(x(i+1) - xT) < threshold);
+        % Check to see if we are outside the range or not (Code Not Added)
+        
+        eps = eps + (1 - eps0) / N;
 
         % Update the Q-table using the Q-learning update rule
         [~, a_next] = max(Q(x(i+1), :));
@@ -50,15 +60,39 @@ for k=1:100 % Number of Episodes
         end
 
         Q(x(i),a)=Q(x(i),a)+alp*(r(i)-gam*Q(x(i+1),a_next)-Q(x(i),a));
-        pause(0.01);
 
-        movement(a);
+        xold(k, i) = x(i);
 
-        if at_target
-            break;
-        end
     end
-    pause(1);
+    pause(5);
+
+end
+
+% Testing Code
+
+for i= 1:N
+    [~,a] = max(Q(x(i),:));
+
+    movement(a)
+
+    x(i+1) = state();
+
+    at_target = (abs(x(i+1) - xT) < threshold);
+
+    % Calculate the reward
+    if abs(x(i+1)-xT)< abs(x(i)-xT)
+        r(i) = 0;
+    else
+        r(i) = -1;
+    end
+
+    [~, a_next] = max(Q(x(i+1), :));
+    Q(x(i),a)=Q(x(i),a)+alp*(r(i)-gam*Q(x(i+1),a_next)-Q(x(i),a));
+
+    if at_target
+        break;
+    end
+
 
 end
 
