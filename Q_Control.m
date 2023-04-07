@@ -12,7 +12,6 @@ Plot3 = animatedline('LineWidth',1,'Color','r'); grid on; box on;
 title('Serial Data','FontSize',12); xlabel('Elapsed Time (s)','FontSize',9); ylabel('Amplitude (units)','FontSize',9)
 Time = zeros(1,5000); Filtered  = zeros(size(Time)); Controlled = zeros(size(Time)); 
 fwrite(S,0,'async'); tic % Start the communication and the stopwatch timer
-prev_dur = -1;
 
 Q=rand(20,3); xold=[];
 
@@ -33,7 +32,7 @@ for k=1:10 %Number of training targets for the Q-table
     N=540;
 
     x(1)=x_ini;
-
+    
     for i=1:N %while true %loop will not break until target is reached
         % chose an action from state x(i)
 
@@ -66,7 +65,7 @@ for k=1:10 %Number of training targets for the Q-table
            LB = prev_dur - range;
            UB = prev_dur + range;
            dist = prev_dur * 0.0135 / 2;
-           if (cur_dur >= UB) && (cur_dur <= LB)
+           if (cur_dur >= UB) || (cur_dur <= LB)
                prev_dur = cur_dur;
                % PWM for motor 1/driver outputs 1&2
                % PWM comes from q-table

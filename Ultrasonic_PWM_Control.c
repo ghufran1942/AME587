@@ -36,14 +36,8 @@ int main(){
         __delay_us(20);
 
         uint16_t curr_duration = measure_duration();
-//        if (prev_duration != -1){ // Only compare if there is a valid previous value
-//            uint8_t range = 0.1 * prev_duration; // depending on the constant 0.1 the range changes.
-//            uint16_t lower_bound = prev_duration - range;
-//            uint16_t upper_bound = prev_duration + range;
-//            if (curr_duration >= lower_bound && curr_duration <= upper_bound) {
-//                float distance = calcualte_distance(curr_duration);
         char *bytes = (char*)(&curr_duration);
-        for(int i=0; i < 4;i++){
+        for(int i=0; i < 2;i++){
             Send(bytes[i]);
         }
 //                }
