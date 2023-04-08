@@ -43,7 +43,7 @@ int main(){
 //            if (curr_duration >= lower_bound && curr_duration <= upper_bound) {
 //                float distance = calcualte_distance(curr_duration);
         char *bytes = (char*)(&curr_duration);
-        for(int i=0; i < 4;i++){
+        for(int i=0; i < 2;i++){
             Send(bytes[i]);
         }
 //                }
