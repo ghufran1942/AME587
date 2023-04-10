@@ -18,7 +18,6 @@ volatile uint8_t timer0_overflow_count = 0;
 // Function Declarations
 int initialization();
 float measure_duration();
-//float calcualte_distance(uint16_t duration);
 void Send(unsigned char x);
 unsigned char Receive(void);
 void __interrupt() ISR(void); 
@@ -27,32 +26,14 @@ int main(){
     initialization();
 
     __delay_ms(100);
-
-    PORTC = 0;
-    CCPR1L = 0;
     
-//    uint16_t prev_duration = -1;
     while (1) {
         __delay_us(20);
 
         float curr_duration = measure_duration();
-//        if (prev_duration != -1){ // Only compare if there is a valid previous value
-//            uint8_t range = 0.1 * prev_duration; // depending on the constant 0.1 the range changes.
-//            uint16_t lower_bound = prev_duration - range;
-//            uint16_t upper_bound = prev_duration + range;
-//            if (curr_duration >= lower_bound && curr_duration <= upper_bound) {
-//                float distance = calcualte_distance(curr_duration);
         char *bytes = (char*)(&curr_duration);
-        for(int i=0; i < 2;i++){
+        for(int i=0; i < 4;i++){
             Send(bytes[i]);
-        }
-//                }
-
-                
-//            }else{
-//                prev_duration = curr_duration; // Store the current duration value as the previous duration value for the next iteration
-//            }
-//        }       
         
         //Toggle LEDs/motor 1
         CCPR1L = Receive();
@@ -94,10 +75,6 @@ float measure_duration()
     return duration;
 }
 
-//float calcualte_distance(uint16_t duration){
-//    return duration * 0.0135 / 2; // I think this should calculate the distance in inches
-//}
-
 void Send(unsigned char x)            // Send 1 Byte to MATLAB via RS232
 {
     TXREG = x;                      // Move Byte to Transmit Data Register
@@ -132,8 +109,8 @@ int initialization(){
     
     // BANK1
     OSCCON = 0b01110000;            // Setting Oscillator to do 8MHz
-    ADCON1 = 0b01010000;            // Select ADC Clock to FOSC/16
-    TRISA = 0b00000101;            // Input: pin AN0 pin A2 as digitial input
+//    ADCON1 = 0b01010000;            // Select ADC Clock to FOSC/16
+    TRISA = 0b00000101;            // Input: pin AN0 pin A2 as digital input
     TRISB = 0b00010000;
     TRISC  = 0b00000000;            // Output: all pins
 
@@ -144,18 +121,19 @@ int initialization(){
     TXEN = 1;                       // Enable transmission
     BRG16 = 0;                      // Set Baud Rate Generator to 8bit. 1 for 16
     SPBRG = 25;                     // Set baud rate timer period
+    PORTC = 0;
     
     // BANK0
     //ADCON0
-    ADON = 1;                       // Enable ADC conversion
-    GO = 0;                         // Stop any conversion
+//    ADON = 1;                       // Enable ADC conversion
+//    GO = 0;                         // Stop any conversion
 
     //ADC to AN0
-    CHS0 = 0;
-    CHS1 = 0;
-    CHS2 = 0;
-    CHS3 = 0;
-    ADFM = 0;                       // Left Justify ADRESH ADRESL
+//    CHS0 = 0;
+//    CHS1 = 0;
+//    CHS2 = 0;
+//    CHS3 = 0;
+//    ADFM = 0;                       // Left Justify ADRESH ADRESL
     //CCP1CON; P1A-D all active high, PWM cycle least sig bits, PWM half bridge
     CCP1CON = 0b10001100;
     PR2 = 255;
