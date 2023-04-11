@@ -34,14 +34,14 @@ int main(){
         char *bytes = (char*)(&curr_duration);
         for(int i=0; i < 4;i++){
             Send(bytes[i]);
-        
+        }
         //Toggle LEDs/motor 1
-        CCPR1L = Receive();
+        PORTC = Receive();
+        //CCPR1L = PORTC;
     }
+    return 0;
 }
-
-float measure_duration()
-{
+float measure_duration(){
     // Signal Initialization
     RA0 = 1;
     __delay_us(10);
@@ -75,22 +75,21 @@ float measure_duration()
     return duration;
 }
 
-void Send(unsigned char x)            // Send 1 Byte to MATLAB via RS232
-{
+void Send(unsigned char x){            // Send 1 Byte to MATLAB via RS232
+
     TXREG = x;                      // Move Byte to Transmit Data Register
     SPEN = 1;                       // Enable Continuous Send (RCSTA reg)
     while (!TRMT);           // Wait until TXREG is empty (TXSTA reg)
 } 
 
-unsigned char Receive(void)                   // Receive 1 Byte from MATLAB via RS232
-{
+unsigned char Receive(void){                   // Receive 1 Byte from MATLAB via RS232
+
     CREN = 1;                       // Enable Asynchronous Receiver (RCSTA reg)
     while (!RCIF);           // Wait for RCREG to fill (PIR1 reg)
     return RCREG;
 } 
 
-void __interrupt() ISR(void)
-{
+void __interrupt() ISR(void){
     if (INTCONbits.T0IF)        // Check if Timer0 overflow interrupt occurred
     {
         timer0_overflow_count++;// Increment the overflow count
@@ -112,7 +111,7 @@ int initialization(){
 //    ADCON1 = 0b01010000;            // Select ADC Clock to FOSC/16
     TRISA = 0b00000101;            // Input: pin AN0 pin A2 as digital input
     TRISB = 0b00010000;
-    TRISC  = 0b00000000;            // Output: all pins
+    //TRISC  = 0b00000000;            // Output: all pins
 
     //TXSTA bits
     TRMT = 1;                       // Empty Transmit Shift register
@@ -138,7 +137,7 @@ int initialization(){
     CCP1CON = 0b10001100;
     PR2 = 255;
     CCPR1L = 0b00000000;
-    T2CON = 0b01111110;
+    //T2CON = 0b01111110;
 
     // Timer1 configuration (for measuring echo pulse duration)
     T1CONbits.TMR1CS = 0;       // Select internal clock (FOSC/4)
