@@ -37,15 +37,13 @@ int main(){
             Send(bytes[i]);
         }
         //Toggle motor 1
+        CCPR1L = Receive();
         RC0 = 1; // Enable motor 1
-        PORTC = Receive();
-        CCPR1L = PORTC;
         __delay_ms(500); // Let motor 1 be active for 1/2 second
         RC0 = 0; // Disable motor 1
         
         //Toggle motor 2
-        PORTC = Receive();
-        CCPR1L = PORTC;
+        CCPR1L = Receive();
         RC1 = 1; // Enable motor 2
         __delay_ms(500); // Let motor 2 be active for 1/2 second
         RC1 = 0; // Disable motor 2
