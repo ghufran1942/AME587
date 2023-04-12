@@ -24,6 +24,7 @@ void __interrupt() ISR(void);
 
 int main(){
     initialization();
+    PORTC = 0;
 
     __delay_ms(100);
     
@@ -35,9 +36,20 @@ int main(){
         for(int i=0; i < 4;i++){
             Send(bytes[i]);
         }
-        //Toggle LEDs/motor 1
+        //Toggle motor 1
+        RC0 = 1; // Enable motor 1
         PORTC = Receive();
-        //CCPR1L = PORTC;
+        CCPR1L = PORTC;
+        __delay_ms(500); // Let motor 1 be active for 1/2 second
+        RC0 = 0; // Disable motor 1
+        
+        //Toggle motor 2
+        PORTC = Receive();
+        CCPR1L = PORTC;
+        RC1 = 1; // Enable motor 2
+        __delay_ms(500); // Let motor 2 be active for 1/2 second
+        RC1 = 0; // Disable motor 2
+        CCPR1L = 0; // Clear CCPR1L
     }
     return 0;
 }
@@ -110,8 +122,8 @@ int initialization(){
     OSCCON = 0b01110000;            // Setting Oscillator to do 8MHz
 //    ADCON1 = 0b01010000;            // Select ADC Clock to FOSC/16
     TRISA = 0b00000101;            // Input: pin AN0 pin A2 as digital input
-    TRISB = 0b00010000;
-    //TRISC  = 0b00000000;            // Output: all pins
+    TRISB = 0b00010000;             // Input: RB4
+    TRISC  = 0b00000000;            // Output: all pins
 
     //TXSTA bits
     TRMT = 1;                       // Empty Transmit Shift register
@@ -120,7 +132,6 @@ int initialization(){
     TXEN = 1;                       // Enable transmission
     BRG16 = 0;                      // Set Baud Rate Generator to 8bit. 1 for 16
     SPBRG = 25;                     // Set baud rate timer period
-    PORTC = 0;
     
     // BANK0
     //ADCON0
