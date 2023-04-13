@@ -24,6 +24,7 @@ void __interrupt() ISR(void);
 
 int main(){
     initialization();
+    PORTC = 0;
 
     __delay_ms(100);
     
@@ -34,14 +35,23 @@ int main(){
         char *bytes = (char*)(&curr_duration);
         for(int i=0; i < 4;i++){
             Send(bytes[i]);
-        
-        //Toggle LEDs/motor 1
+        }
+        //Toggle motor 1
         CCPR1L = Receive();
+        RC0 = 1; // Enable motor 1
+        __delay_ms(500); // Let motor 1 be active for 1/2 second
+        RC0 = 0; // Disable motor 1
+        
+        //Toggle motor 2
+        CCPR1L = Receive();
+        RC1 = 1; // Enable motor 2
+        __delay_ms(500); // Let motor 2 be active for 1/2 second
+        RC1 = 0; // Disable motor 2
+        CCPR1L = 0; // Clear CCPR1L
     }
+    return 0;
 }
-
-float measure_duration()
-{
+float measure_duration(){
     // Signal Initialization
     RA0 = 1;
     __delay_us(10);
@@ -75,22 +85,21 @@ float measure_duration()
     return duration;
 }
 
-void Send(unsigned char x)            // Send 1 Byte to MATLAB via RS232
-{
+void Send(unsigned char x){            // Send 1 Byte to MATLAB via RS232
+
     TXREG = x;                      // Move Byte to Transmit Data Register
     SPEN = 1;                       // Enable Continuous Send (RCSTA reg)
     while (!TRMT);           // Wait until TXREG is empty (TXSTA reg)
 } 
 
-unsigned char Receive(void)                   // Receive 1 Byte from MATLAB via RS232
-{
+unsigned char Receive(void){                   // Receive 1 Byte from MATLAB via RS232
+
     CREN = 1;                       // Enable Asynchronous Receiver (RCSTA reg)
     while (!RCIF);           // Wait for RCREG to fill (PIR1 reg)
     return RCREG;
 } 
 
-void __interrupt() ISR(void)
-{
+void __interrupt() ISR(void){
     if (INTCONbits.T0IF)        // Check if Timer0 overflow interrupt occurred
     {
         timer0_overflow_count++;// Increment the overflow count
@@ -111,7 +120,7 @@ int initialization(){
     OSCCON = 0b01110000;            // Setting Oscillator to do 8MHz
 //    ADCON1 = 0b01010000;            // Select ADC Clock to FOSC/16
     TRISA = 0b00000101;            // Input: pin AN0 pin A2 as digital input
-    TRISB = 0b00010000;
+    TRISB = 0b00010000;             // Input: RB4
     TRISC  = 0b00000000;            // Output: all pins
 
     //TXSTA bits
@@ -121,7 +130,6 @@ int initialization(){
     TXEN = 1;                       // Enable transmission
     BRG16 = 0;                      // Set Baud Rate Generator to 8bit. 1 for 16
     SPBRG = 25;                     // Set baud rate timer period
-    PORTC = 0;
     
     // BANK0
     //ADCON0
@@ -138,7 +146,7 @@ int initialization(){
     CCP1CON = 0b10001100;
     PR2 = 255;
     CCPR1L = 0b00000000;
-    T2CON = 0b01111110;
+    //T2CON = 0b01111110;
 
     // Timer1 configuration (for measuring echo pulse duration)
     T1CONbits.TMR1CS = 0;       // Select internal clock (FOSC/4)
