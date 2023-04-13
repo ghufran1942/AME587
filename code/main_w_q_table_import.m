@@ -14,6 +14,8 @@ Time = zeros(1,5000); Filtered  = zeros(size(Time)); Controlled = zeros(size(Tim
 fwrite(S,0,'async'); tic % Start the communication and the stopwatch timer
 
 Q=rand(20,3);
+% save("Q_Random.mat","Q")
+% Q = importdata("Q_table.mat");
 xold = [];
 % range = 1/0.0135 %range around the target; set for 1 inch total
 % Training Code
@@ -129,6 +131,8 @@ for i= 1:N
 
 
 end
+
+save('Q_table.mat','Q');
 
 %%Plotting/Communication section
 fclose(S);

@@ -1,8 +1,11 @@
 clear all;close all
 
-Q=rand(20,3); xold=[];
+% Q=rand(20,3); 
+% save("Q_Random.mat","Q")
+Q = importdata("Q_table.mat");
+xold=[];
 
-for k=1:400
+for k=1:100
 
     x_ini=randi(20)
 
@@ -79,6 +82,8 @@ for i=1:N,
     Q(x(i),a)=Q(x(i),a)+alp*(r(i)-gam*Q(x(i+1),a_next)-Q(x(i),a));
 
 end
+
+save('Q_table.mat','Q');
 
 %figure; hold
 
