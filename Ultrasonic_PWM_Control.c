@@ -38,15 +38,17 @@ int main(){
         }
         //Toggle motor 1
         CCPR1L = Receive();
-        RC0 = 1; // Enable motor 1
+        CCP1CON = 0b01001100;
+        RC5 = 1; // Enable motor 1
         __delay_ms(500); // Let motor 1 be active for 1/2 second
-        RC0 = 0; // Disable motor 1
+        RC5 = 0; // Disable motor 1
         
         //Toggle motor 2
         CCPR1L = Receive();
-        RC1 = 1; // Enable motor 2
+        CCP1CON = 0b11001100;
+        RC4= 1; // Enable motor 2
         __delay_ms(500); // Let motor 2 be active for 1/2 second
-        RC1 = 0; // Disable motor 2
+        RC4 = 0; // Disable motor 2
         CCPR1L = 0; // Clear CCPR1L
     }
     return 0;
@@ -150,7 +152,7 @@ int initialization(){
 
     // Timer1 configuration (for measuring echo pulse duration)
     T1CONbits.TMR1CS = 0;       // Select internal clock (FOSC/4)
-    T1CONbits.TMR1ON = 0;       // Disable Timer1 (it will be enabled in the US_distance function)
+    T1CONbits.TMR1ON = 0;       // Disable Timer1 
 
     // Timer0 configuration (for handling timeout)
     OPTION_REGbits.PSA = 0;     // Assign prescaler to Timer0
@@ -158,6 +160,12 @@ int initialization(){
     OPTION_REGbits.T0CS = 0;    // Select internal instruction cycle clock
     OPTION_REGbits.T0SE = 0;    // Increment on low-to-high transition on T0CKI pin
     TMR0 = 0;
-
+    
+    RA1 = 1;    //Enable Direction for MTR 1
+    RA2 = 0;    //Enable Direction for MTR 1
+    
+    RA5 = 0;    //Enable Direction for MTR 2
+    RA4 = 1;    //Enable Direction for MTR 2
+    
     return 0;
 }

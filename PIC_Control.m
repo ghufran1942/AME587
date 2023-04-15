@@ -1,6 +1,6 @@
 clc; clear; close all 
 delete(instrfind()); % Clear serial port
-S = serial('COM7'); % Serial port configuration
+S = serial('COM4'); % Serial port configuration
 set(S,'BaudRate',19200,'InputBufferSize',4); % Set Baud Rate = 19200 and Number of Bytes = 2, same as Microcontroller
 fopen(S); % Open serial port
 figure('units','normalized','outerposition',[0.2 0.2 0.5 0.7]); set(gcf,'color','w'); 
