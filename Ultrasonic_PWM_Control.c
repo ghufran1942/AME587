@@ -24,7 +24,7 @@ void __interrupt() ISR(void);
 
 int main(){
     initialization();
-    PORTC = 0;
+//    PORTC = 0;
 
     __delay_ms(100);
     
@@ -44,9 +44,9 @@ int main(){
         RC5 = 0; // Disable motor 1
         
         //Toggle motor 2
-        CCPR1L = Receive();
+//        CCPR1L = Receive();
         CCP1CON = 0b11001100;
-        RC4= 1; // Enable motor 2
+        RC4 = 1; // Enable motor 2
         __delay_ms(500); // Let motor 2 be active for 1/2 second
         RC4 = 0; // Disable motor 2
         CCPR1L = 0; // Clear CCPR1L
@@ -121,7 +121,7 @@ int initialization(){
     // BANK1
     OSCCON = 0b01110000;            // Setting Oscillator to do 8MHz
 //    ADCON1 = 0b01010000;            // Select ADC Clock to FOSC/16
-    TRISA = 0b00000101;            // Input: pin AN0 pin A2 as digital input
+    TRISA = 0b00000100;            // Input: pin AN0 pin A2 as digital input
     TRISB = 0b00010000;             // Input: RB4
     TRISC  = 0b00000000;            // Output: all pins
 
