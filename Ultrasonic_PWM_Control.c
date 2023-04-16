@@ -1,5 +1,5 @@
-//    Filename: Project
-//    Instructor:
+//    Filename: Class Project
+//    Instructor: Prof. Eniko T. Enikov
 //    Group: 3
 //    Date: 3/23/2023
 
@@ -38,17 +38,19 @@ int main(){
         }
         //Toggle motor 1
         CCPR1L = Receive();
-        CCP1CON = 0b01001100;
+        if (CCPR1L > 0){
+            CCP1CON = 0b01001100;
         RC5 = 1; // Enable motor 1
-        __delay_ms(500); // Let motor 1 be active for 1/2 second
+        __delay_ms(100); // Let motor 1 be active for 1/2 second
         RC5 = 0; // Disable motor 1
         
-        //Toggle motor 2
-//        CCPR1L = Receive();
+        // Toggle motor 2
+        // CCPR1L = Receive();
         CCP1CON = 0b11001100;
         RC4 = 1; // Enable motor 2
-        __delay_ms(500); // Let motor 2 be active for 1/2 second
+        __delay_ms(100); // Let motor 2 be active for 1/2 second
         RC4 = 0; // Disable motor 2
+        }
         CCPR1L = 0; // Clear CCPR1L
     }
     return 0;
