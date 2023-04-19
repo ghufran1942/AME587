@@ -29,7 +29,7 @@ int main(){
     __delay_ms(100);
     
     while (1) {
-        __delay_us(20);
+//        __delay_us(20);
 
         float curr_duration = measure_duration();
         char *bytes = (char*)(&curr_duration);
@@ -37,22 +37,33 @@ int main(){
             Send(bytes[i]);
         }
         //Toggle motor 1
-        CCPR1L = Receive();
-        if (CCPR1L > 0)
-        {
-            CCP1CON = 0b01001100;
-            RC5 = 1; // Enable motor 1
-            __delay_ms(500); // Let motor 1 be active for 1/2 second
-            RC5 = 0; // Disable motor 1
+        unsigned int PWM = Receive();
+        if (PWM > 0)
+        {   
+            if (PWM < 128){
+//                RC2 = 1;
+                PSTRCON = 0b00001000;
+                CCPR1L = PWM;
+//                RC4 = 0;
+//                RC5 = 1; // Enable motor 1
+//                __delay_ms(50); // Let motor 1 be active for 1/2 second
+//                RC5 = 0; // Disable motor 1
+            }
+            else if (PWM > 128){
+//                RC4 = 1;
+                PSTRCON = 0b00000010;   
+                CCPR1L = PWM;
+//                RC2 = 0;
+//                RC4 = 1; // Enable motor 2
+//                __delay_ms(50); // Let motor 2 be active for 1/2 second
+//                RC4 = 0; // Disable motor 2
+            }
             
+//            __delay_ms(100);
             //Toggle motor 2
             // CCPR1L = Receive();
-            CCP1CON = 0b11001100;
-            RC4 = 1; // Enable motor 2
-            __delay_ms(500); // Let motor 2 be active for 1/2 second
-            RC4 = 0; // Disable motor 2
         }
-        CCPR1L = 0; // Clear CCPR1L
+//        CCPR1L = 0; // Clear CCPR1L
     }
     return 0;
 }
