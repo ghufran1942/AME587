@@ -1,8 +1,8 @@
 clear all;close all
 
-% Q=rand(20,3); 
+Q=rand(4500,3); 
 % save("Q_Random.mat","Q")
-Q = importdata("Q_table.mat");
+% Q = importdata("Q_table.mat");
 xold=[];
 
 for k=1:100

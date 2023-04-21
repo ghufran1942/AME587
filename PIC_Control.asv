@@ -12,14 +12,15 @@ for i = 1:length(Time)
    Error(i) = fread(S,1,'float');
    Filtered(i) = Error(i); % Filter
    Controlled(i) = Filtered(i); % Controller
-   if mod(round(i/25),2) == 0
+   if mod(i,2) == 0
     fwrite(S,25,'uint8'); % Send 1 byte back to the Microcontroller
    else
     fwrite(S,220,'uint8'); % Send 1 byte back to the Microcontroller
    end
+   pause(0.5);
    Time(i) = toc;
    addpoints(Plot,Time(i),Error(i)); 
-   axis([toc-10 toc+1 -10 4500]); % Axis based on elapsed time
+   axis([toc-10 toc+1 -10 10000]); % Axis based on elapsed time
    pause(0.01);
 end
 fclose(S);

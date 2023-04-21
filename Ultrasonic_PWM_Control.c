@@ -24,7 +24,7 @@ void __interrupt() ISR(void);
 
 int main(){
     initialization();
-//    PORTC = 0;
+    PORTC = 0;
 
     __delay_ms(100);
     
@@ -37,19 +37,25 @@ int main(){
             Send(bytes[i]);
         }
         //Toggle motor 1
-        CCPR1L = Receive();
-        CCP1CON = 0b01001100;
-        RC5 = 1; // Enable motor 1
-        __delay_us(1000); // Let motor 1 be active for 1/2 second
-        RC5 = 0; // Disable motor 1
-        
-        //Toggle motor 2
-//        CCPR1L = Receive();
-        CCP1CON = 0b11001100;
-        RC4 = 1; // Enable motor 2
-        __delay_us(1000); // Let motor 2 be active for 1/2 second
-        RC4 = 0; // Disable motor 2
-        CCPR1L = 0; // Clear CCPR1L
+        unsigned int PWM = Receive();
+        if (PWM == 0){
+            CCPR1L = 0;
+        }
+        else if (PWM < 127){
+            //Toggle motor 1
+            CCPR1L = PWM;
+            STRA = 1;
+            STRB = 0;
+            __delay_ms(10);
+        }
+        else{
+            //Toggle motor 2
+            CCPR1L = 255-PWM;
+            STRA = 0;
+            STRB = 1;
+            __delay_ms(10);
+
+        }
     }
     return 0;
 }
@@ -112,7 +118,7 @@ void __interrupt() ISR(void){
 
 int initialization(){
     // BANK3
-    PSTRCON = 0b00010011;           //PA & PB = PWM; PC & PD = port pins; steering update at beginning
+    PSTRCON = 0b00010000;           //steering update at beginning
     
     // BANK2
     ANSEL  = 0b00000000;            // All pins digital except pin AN0
@@ -145,10 +151,10 @@ int initialization(){
 //    CHS3 = 0;
 //    ADFM = 0;                       // Left Justify ADRESH ADRESL
     //CCP1CON; P1A-D all active high, PWM cycle least sig bits, PWM half bridge
-    CCP1CON = 0b10001100;
+    CCP1CON = 0b00001100;
     PR2 = 255;
     CCPR1L = 0b00000000;
-    //T2CON = 0b01111110;
+    T2CON = 0b01111110;
 
     // Timer1 configuration (for measuring echo pulse duration)
     T1CONbits.TMR1CS = 0;       // Select internal clock (FOSC/4)
