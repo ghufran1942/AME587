@@ -1,7 +1,12 @@
-1. Connect the Enable Pins to Dual PWM i.e. RC5 and RC4. ==> Code modification done: change: CCP1CON = 0b00001100; to CCP1CON = 0b10001100;
-Note: 
-    1. Don't reset the CCP1CON Register.
-2. The C2OUT output control of PORTC must be disabled. ==> What does it mean?
-3. Page No. 122. For more information on modulation.
-4. The PWM Steering is available only when the CCP1M<3:2> = 11 and P1M<1:0> = 00 (CCP1CON register).
-                                               CCP1CON    = 0b00001100
+1. Circuit Schematic
+2. The problems we had and how we addressed them.
+3. Block Diagram
+4. Flow Chart
+5. Theoritical Calculations
+6. Results.
+7. Comment the code.
+8. Demostration.
+
+
+N. Q-learning
+N+1. Suggestions for the future projects
