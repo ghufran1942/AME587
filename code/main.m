@@ -20,8 +20,6 @@ fwrite(S,0,'async'); tic % Start the communication and the stopwatch timer
 Q=rand(20,3);
 xold = [];
 
-% range = 1/0.0135 %range around the target; set for 1 inch total
-
 % Training Code
 
 % Code for Testing the Serial Communications
@@ -36,9 +34,9 @@ xold = [];
 %    pause(0.01);
 % end
 
-for k=1:20 % Number of Episodes
+xT= round(15*rand(20,1)+5); %Specific target location in inches
 
-    xT=10; %Specific target location in inches
+for k=1:length(xT) % Number of Episodes
 
     pfwd=0.7;
 
@@ -51,11 +49,13 @@ for k=1:20 % Number of Episodes
     % Set the initial state
     x(1) = state(S,1);
 
-    % duration = fread(S,1,'float'); % Read 4 bytes (32 bits) from the Microcontroller
-    % fwrite(S,1,'uint8');
-    % x(1) = duration * 0.0135 / 2; 
+    duration = fread(S,1,'float'); % Read 4 bytes (32 bits) from the Microcontroller
 
-    count = 0;
+    fwrite(S,1,'uint8');
+    
+    decideMotion(xT(k),x(1)); % Determines which buzzer to use
+
+    exitRun = 0; % Counter for exiting loop if user stays at target for some time
     for i = 1:N
         % Choose an action based on the learned Q-table
         [~, a] = max(Q(round(x(i)), :));
@@ -65,17 +65,13 @@ for k=1:20 % Number of Episodes
         pause(0.1); %Allows some time for movement before checking the sensor
 
         % Read the updated state from the sensor
-        % duration = fread(S,1,'float'); % Read 4 bytes (32 bits) from the Microcontroller
-        % fwrite(S,0,'uint8');
-        % x(i+1) = duration * 0.0135 / 2; 
-
         x(i+1) = state(S,0);
 
         % Update the Q-table using the Q-learning update rule
         [~, a_next] = max(Q(round(x(i+1)), :));
         
         % Calculate the reward
-        if abs(x(i+1)-xT)< abs(x(i)-xT)
+        if abs(x(i+1)-xT(k))< abs(x(i)-xT(k))
             r(i) = 0;
         else
             r(i) = -1;
@@ -85,20 +81,20 @@ for k=1:20 % Number of Episodes
 
         xold(k, i) = x(i);
 
-        at_target = round(x(i+1)) == xT; %Determines if the current position is close enough to the target
+        at_target = round(x(i+1)) == xT(k); %Determines if the current position is close enough to the target
         
         % Check to see if we are outside the range or not
         if at_target
-            count = count + 1;
+            exitRun = exitRun + 1;
         else
-            count = 0;
+            exitRun = 0;
         end
-        if count >= 2 %Exits the loop early if the user stays within the bounds for ~2 seconds
+        if exitRun >= 18 %Exits the loop early if the user stays within the bounds for ~2 seconds
             break;
         end
-
+        pause(.1);
     end
-    pause(.5);
+    
 
 end
 

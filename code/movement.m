@@ -13,24 +13,19 @@ end
 
 function move_sensor_left()
     fread(Serial,1,'float');
-    fwrite(S,100,'uint8'); % Send 1 byte back to the Microcontroller
-    pause(0.1);
-    fread(Serial,1,'float');
-    fwrite(S,200,'uint8'); % Send 1 byte back to the Microcontroller
+    fwrite(S,150,'uint8'); % Send 1 byte back to the Microcontroller
+    pause(0.5);
 end
 
 function move_sensor_right()
     fread(Serial,1,'float');
-    fwrite(S,200,'uint8'); % Send 1 byte back to the Microcontroller
-    pause(0.45);
-    fread(Serial,1,'float');
-    fwrite(S,100,'uint8'); % Send 1 byte back to the Microcontroller
+    fwrite(S,250,'uint8'); % Send 1 byte back to the Microcontroller
+    pause(0.5);
 end
 
 function stay()
     fread(Serial,1,'float');
-    fwrite(S,200,'uint8'); % Send 1 byte back to the Microcontroller
-    pause(0.65);
-    fread(Serial,1,'float');
-    fwrite(S,200,'uint8'); % Send 1 byte back to the Microcontroller
+    fwrite(S,50,'uint8'); % Send 1 byte back to the Microcontroller
+    pause(0.5);
+    
 end
