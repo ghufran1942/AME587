@@ -25,7 +25,7 @@ end
 
 function stay(S)
     fread(S,1,'float');
-    fwrite(S,0,'uint8'); % Send 1 byte back to the Microcontroller
+    fwrite(S,127,'uint8'); % Send 1 byte back to the Microcontroller
     pause(0.5);
     
 end

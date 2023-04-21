@@ -34,7 +34,7 @@ xold = [];
 %    pause(0.01);
 % end
 
-xT= round(15*rand(20,1)+5); %Specific target location in inches
+xT= round(3700*rand(20,1)+500); %Specific target location in inches
 
 for k=1:length(xT) % Number of Episodes
 
@@ -57,11 +57,12 @@ for k=1:length(xT) % Number of Episodes
 
     exitRun = 0; % Counter for exiting loop if user stays at target for some time
     tic % Start the stopwatch timer
+    figure(1);
     for i = 1:N
         % Choose an action based on the learned Q-table
         [~, a] = max(Q(round(x(i)), :));
 
-        movement(a);
+        movement(a,S);
         
         pause(0.1); %Allows some time for movement before checking the sensor
 
@@ -82,7 +83,7 @@ for k=1:length(xT) % Number of Episodes
 
         xold(k, i) = x(i);
 
-        at_target = round(x(i+1)) == xT(k); %Determines if the current position is close enough to the target
+        at_target = abs(x(i+1) - xT(k)) < 500; %Determines if the current position is close enough to the target
         
         % Check to see if we are outside the range or not
         if at_target
@@ -90,7 +91,7 @@ for k=1:length(xT) % Number of Episodes
         else
             exitRun = 0;
         end
-        if exitRun >= 18 %Exits the loop early if the user stays within the bounds for ~2 seconds
+        if exitRun >= 2 %Exits the loop early if the user stays within the bounds for ~2 seconds
             break;
         end
 
@@ -100,6 +101,8 @@ for k=1:length(xT) % Number of Episodes
         axis([toc-10 toc+1 -10 10000]); % Axis based on elapsed time
         pause(0.01);
     end
+    delete(Plot);
+    delete(Plot2);
     
 
 end

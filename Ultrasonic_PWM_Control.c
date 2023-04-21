@@ -41,6 +41,12 @@ int main(){
         if (PWM == 0){
             CCPR1L = 0;
         }
+        else if (PWM == 127){
+            CCPR1L = PWM;
+            STRA = 1;
+            STRB = 1;
+            __delay_ms(10);
+        }
         else if (PWM < 127){
             //Toggle motor 1
             CCPR1L = PWM;
