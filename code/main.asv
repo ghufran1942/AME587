@@ -6,7 +6,7 @@
 
 clc; clear; close all 
 delete(instrfind()); % Clear serial port
-S = serial('COM7'); % Serial port configuration
+S = serial('COM4'); % Serial port configuration
 set(S,'BaudRate',19200,'InputBufferSize',4); % Set Baud Rate = 19200 and Number of Bytes = 2, same as Microcontroller
 fopen(S); % Open serial port
 figure('units','normalized','outerposition',[0.2 0.2 0.5 0.7]); set(gcf,'color','w'); 
@@ -15,9 +15,9 @@ Plot2 = animatedline('LineWidth',1,'Color','g'); grid on; box on;
 Plot3 = animatedline('LineWidth',1,'Color','r'); grid on; box on; 
 title('Serial Data','FontSize',12); xlabel('Elapsed Time (s)','FontSize',9); ylabel('Amplitude (units)','FontSize',9)
 Time = zeros(1,10000); Filtered  = zeros(size(Time)); Controlled = zeros(size(Time)); 
-fwrite(S,0,'async'); 
+fwrite(S,0,'async'); tic % Start the communication and the stopwatch timer
 
-Q=rand(4500,3);
+Q=rand(20,3);
 xold = [];
 
 % Training Code
@@ -34,7 +34,7 @@ xold = [];
 %    pause(0.01);
 % end
 
-xT= round(3700*rand(20,1)+500); %Specific target location in inches
+xT= round(15*rand(20,1)+5); %Specific target location in inches
 
 for k=1:length(xT) % Number of Episodes
 
@@ -44,25 +44,23 @@ for k=1:length(xT) % Number of Episodes
 
     gam=0.1;
 
-    N=length(Time);
+    N=540;
     
     % Set the initial state
-    x(1) = state(S,0);
+    x(1) = state(S,1);
 
-%     duration = fread(S,1,'float'); % Read 4 bytes (32 bits) from the Microcontroller
+    duration = fread(S,1,'float'); % Read 4 bytes (32 bits) from the Microcontroller
 
-%     fwrite(S,1,'uint8');
+    fwrite(S,1,'uint8');
     
-    decideMotion(xT(k),x(1),S); % Determines which buzzer to use
+    decideMotion(xT(k),x(1)); % Determines which buzzer to use
 
     exitRun = 0; % Counter for exiting loop if user stays at target for some time
-    tic % Start the stopwatch timer
-    figure(1);
     for i = 1:N
         % Choose an action based on the learned Q-table
         [~, a] = max(Q(round(x(i)), :));
 
-        movement(a,S);
+        movement(a);
         
         pause(0.1); %Allows some time for movement before checking the sensor
 
@@ -83,7 +81,7 @@ for k=1:length(xT) % Number of Episodes
 
         xold(k, i) = x(i);
 
-        at_target = abs(x(i+1) - xT(k)) < 500; %Determines if the current position is close enough to the target
+        at_target = round(x(i+1)) == xT(k); %Determines if the current position is close enough to the target
         
         % Check to see if we are outside the range or not
         if at_target
@@ -91,18 +89,16 @@ for k=1:length(xT) % Number of Episodes
         else
             exitRun = 0;
         end
-        if exitRun >= 2 %Exits the loop early if the user stays within the bounds for ~2 seconds
+        if exitRun >= 18 %Exits the loop early if the user stays within the bounds for ~2 seconds
             break;
         end
 
         Time(i) = toc;
-        addpoints(Plot,Time(i),x(i)); 
+        addpoints(Plot,Time(i),Error(i)); 
         addpoints(Plot2,Time(i),xT(k));
         axis([toc-10 toc+1 -10 10000]); % Axis based on elapsed time
         pause(0.01);
     end
-    delete(Plot);
-    delete(Plot2);
     
 
 end
