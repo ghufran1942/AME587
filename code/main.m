@@ -10,9 +10,6 @@ S = serial('COM7'); % Serial port configuration
 set(S,'BaudRate',19200,'InputBufferSize',4); % Set Baud Rate = 19200 and Number of Bytes = 2, same as Microcontroller
 fopen(S); % Open serial port
 figure('units','normalized','outerposition',[0.2 0.2 0.5 0.7]); set(gcf,'color','w'); 
-Plot = animatedline('LineWidth',1,'Color','b'); grid on; box on; 
-Plot2 = animatedline('LineWidth',1,'Color','g'); grid on; box on; 
-Plot3 = animatedline('LineWidth',1,'Color','r'); grid on; box on; 
 title('Serial Data','FontSize',12); xlabel('Elapsed Time (s)','FontSize',9); ylabel('Amplitude (units)','FontSize',9)
 Time = zeros(1,10000); Filtered  = zeros(size(Time)); Controlled = zeros(size(Time)); 
 fwrite(S,0,'async'); 
@@ -20,24 +17,12 @@ fwrite(S,0,'async');
 Q=rand(4500,3);
 xold = [];
 
-% Training Code
-
-% Code for Testing the Serial Communications
-% for i = 1:10000
-%    Error(i) = fread(S,1,'float');
-%    Filtered(i) = Error(i); % Filter
-%    Controlled(i) = Filtered(i); % Controller
-%    fwrite(S,128,'uint8'); % Send 1 byte back to the Microcontroller
-%    Time(i) = toc;
-%    addpoints(Plot,Time(i),Error(i)); 
-%    axis([toc-10 toc+1 -10 10000]); % Axis based on elapsed time
-%    pause(0.01);
-% end
 
 xT= round(3700*rand(20,1)+500); %Specific target location in inches
 
 for k=1:length(xT) % Number of Episodes
-
+    Plot = animatedline('LineWidth',1,'Color','b'); grid on; box on; 
+    Plot2 = animatedline('LineWidth',1,'Color','g'); grid on; box on; 
     pfwd=0.7;
 
     alp=0.31;
@@ -64,7 +49,7 @@ for k=1:length(xT) % Number of Episodes
 
         movement(a,S);
         
-        pause(0.1); %Allows some time for movement before checking the sensor
+        %pause(0.1); %Allows some time for movement before checking the sensor
 
         % Read the updated state from the sensor
         x(i+1) = state(S,0);
