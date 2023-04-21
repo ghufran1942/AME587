@@ -39,29 +39,33 @@ int main(){
         //Toggle motor 1
         unsigned int PWM = Receive();
         if (PWM > 0)
-        {   
-            if (PWM < 128){
-//                RC2 = 1;
-                PSTRCON = 0b00001000;
-                CCPR1L = PWM;
-//                RC4 = 0;
-//                RC5 = 1; // Enable motor 1
+        {
+            if (PWM == 50){
+                asm("BSF PORTC,2");
+                asm("BCF PORTC,4");
+                __delay_ms(50); // Let motor 1 be active for 1/2 second
+                asm("BCF PORTC,2");
+                asm("BCF PORTC,4");
+            }
+            else if (PWM == 150){
+                asm("BCF PORTC,2");
+                asm("BSF PORTC,4");
+                __delay_ms(50); // Let motor 1 be active for 1/2 second
+                asm("BCF PORTC,2");
+                asm("BCF PORTC,4");
+            }else if (PWM == 250){
+                asm("BSF PORTC,2");
+                asm("BSF PORTC,4");
+                __delay_ms(50); // Let motor 1 be active for 1/2 second
+                asm("BCF PORTC,2");
+                asm("BCF PORTC,4");
+            }else{
+                asm("BCF PORTC,2");
+                asm("BCF PORTC,4");
 //                __delay_ms(50); // Let motor 1 be active for 1/2 second
-//                RC5 = 0; // Disable motor 1
+//                asm("BCF PORTC,2");
+//                asm("BCF PORTC,5");
             }
-            else if (PWM > 128){
-//                RC4 = 1;
-                PSTRCON = 0b00000010;   
-                CCPR1L = PWM;
-//                RC2 = 0;
-//                RC4 = 1; // Enable motor 2
-//                __delay_ms(50); // Let motor 2 be active for 1/2 second
-//                RC4 = 0; // Disable motor 2
-            }
-            
-//            __delay_ms(100);
-            //Toggle motor 2
-            // CCPR1L = Receive();
         }
 //        CCPR1L = 0; // Clear CCPR1L
     }
@@ -125,7 +129,7 @@ void __interrupt() ISR(void){
 
 int initialization(){
     // BANK3
-    PSTRCON = 0b00010011;           //PA & PB = PWM; PC & PD = port pins; steering update at beginning
+    // PSTRCON = 0b00010011;           //PA & PB = PWM; PC & PD = port pins; steering update at beginning
     
     // BANK2
     ANSEL  = 0b00000000;            // All pins digital except pin AN0
@@ -147,9 +151,9 @@ int initialization(){
     SPBRG = 25;                     // Set baud rate timer period
     
     //CCP1CON; P1A-D all active high, PWM cycle least sig bits, PWM half bridge
-    CCP1CON = 0b10001100;
-    PR2 = 255;
-    CCPR1L = 0b00000000;
+    CCP1CON = 0b00000000;
+//    PR2 = 255;
+//    CCPR1L = 0b00000000;
     //T2CON = 0b01111110;
 
     // Timer1 configuration (for measuring echo pulse duration)
