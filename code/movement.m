@@ -9,23 +9,20 @@ function movement(a,S)
         otherwise 
             disp('Unknown Command');
     end
+    pause(0.5);
 end
 
 function move_sensor_left(S)
     fread(S,1,'float');
-    fwrite(S,25,'uint8'); % Send 1 byte back to the Microcontroller
-    pause(0.5);
+    fwrite(S,45,'uint8'); % Send 1 byte back to the Microcontroller
 end
 
 function move_sensor_right(S)
     fread(S,1,'float');
-    fwrite(S,220,'uint8'); % Send 1 byte back to the Microcontroller
-    pause(0.5);
+    fwrite(S,200,'uint8'); % Send 1 byte back to the Microcontroller
 end
 
 function stay(S)
     fread(S,1,'float');
-    fwrite(S,127,'uint8'); % Send 1 byte back to the Microcontroller
-    pause(0.5);
-    
+    fwrite(S,127,'uint8'); % Send 1 byte back to the Microcontroller  
 end

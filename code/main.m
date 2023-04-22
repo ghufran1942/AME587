@@ -48,15 +48,28 @@ for k=1:length(xT) % Number of Episodes
         [~, a] = max(Q(round(x(i)), :));
 
         movement(a,S);
-        
-        pause(0.5); %Allows some time for movement before checking the sensor
 
         % Read the updated state from the sensor
         x(i+1) = state(S,0);
 
         % Update the Q-table using the Q-learning update rule
         [~, a_next] = max(Q(round(x(i+1)), :));
-        
+
+        %Holds current action until user holds in place for some time
+        last_state = -1;
+        count = 0;
+        while true
+            current = state(S,a);
+            if abs(current - last_state) < 1
+                count = count + 1;
+                if count > 25
+                    break;
+                end
+            end
+            last_state = current;
+        end
+
+
         % Calculate the reward
         if abs(x(i+1)-xT(k))< abs(x(i)-xT(k))
             r(i) = 0;
@@ -64,26 +77,13 @@ for k=1:length(xT) % Number of Episodes
             r(i) = -1;
         end
 
-        %Holds current action until user holds in place for some time
-        last_state = -1;
-        while true
-            count = 0;
-            current = state(S,0);
-            if abs(current - last_state) < 0.5
-                count = count + 1;
-                if count > 1000
-                    break;
-                end
-            end
-            last_state = current;
-        end
         Q(round(x(i)),a)=Q(round(x(i)),a)+alp*(r(i)-gam*Q(round(x(i+1)),a_next)-Q(round(x(i)),a));
 
         xold(k, i) = x(i);
 
         
 
-        at_target = abs(x(i+1) - xT(k)) < 0.5; %Determines if the current position is close enough to the target
+        at_target = abs(x(i+1) - xT(k)) < 1; %Determines if the current position is close enough to the target
         
         % Check to see if we are outside the range or not
         if at_target
