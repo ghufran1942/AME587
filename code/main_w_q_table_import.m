@@ -41,7 +41,7 @@ for k=1:length(xT) % Number of Episodes
 %     fwrite(S,1,'uint8');
     
     decideMotion(xT(k),x(1),S); % Determines which buzzer to use
-
+    disp(xT(k));
     exitRun = 0; % Counter for exiting loop if user stays at target for some time
     tic % Start the stopwatch timer
     figure(1);
@@ -71,21 +71,17 @@ for k=1:length(xT) % Number of Episodes
             last_state = current;
         end
 
-
+        at_target = abs(x(i+1) - xT(k)) < 1; %Determines if the current position is close enough to the target
         % Calculate the reward
-        if abs(x(i+1)-xT(k)) < abs(x(i)-xT(k))
+        if abs(x(i+1)-xT(k)) < abs(x(i)-xT(k)) || at_target
             r(i) = 1;
         else
             r(i) = -1;
         end
 
-        Q(xT(k),round(x(i)),a)=Q(xT(k),round(x(i)),a)+alp*(r(i)-gam*Q(xT(k),round(x(i+1)),a_next)-Q(xT(k),round(x(i)),a));
+        Q(xT(k),round(x(i)),a)=Q(xT(k),round(x(i)),a) + alp*(r(i)-gam*Q(xT(k),round(x(i+1)),a_next) - Q(xT(k),round(x(i)),a));
 
         xold(k, i) = x(i);
-
-        
-
-        at_target = abs(x(i+1) - xT(k)) < 1; %Determines if the current position is close enough to the target
         
         % Check to see if we are outside the range or not
         if at_target
@@ -103,6 +99,7 @@ for k=1:length(xT) % Number of Episodes
         axis([toc-10 toc+1 0 30]); % Axis based on elapsed time
         pause(0.01);
     end
+    save('enikov_trained_Q_table.mat','Q');
     delete(Plot);
     delete(Plot2);
     movement(2,S)
@@ -110,7 +107,7 @@ for k=1:length(xT) % Number of Episodes
 
 end
 
-save('trained_Q_table.mat','Q');
+
 
 movement(2,S)
 pause(2)
