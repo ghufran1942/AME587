@@ -1,11 +1,9 @@
 1. Circuit Schematic
 2. The problems we had and how we addressed them.
-3. Block Diagram
-4. Flow Chart
-5. Theoritical Calculations
-6. Results.
-7. Comment the code.
-8. Demostration.
+3. Code Functionality
+4. Theory
+5. Results.
+6. Future.
 
 
 N. Q-learning
