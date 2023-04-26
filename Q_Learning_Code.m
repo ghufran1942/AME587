@@ -1,65 +1,65 @@
 clear all;close all
 
-Q=rand(4500,3); 
+Q=rand(30,30,3);
 % save("Q_Random.mat","Q")
 % Q = importdata("Q_table.mat");
 xold=[];
-
-for k=1:100
-
-    x_ini=randi(20)
-
-    xT=10;
-
-    pfwd=0.7;
-
-    alp=0.31;
-
-    gam=0.1
-
-    eps0=1;eps=eps0;
-
-    N=540;
-
-    x(1)=x_ini;
-
-    for i=1:N,
-
-        % chose an action from state x(i)
-
-        [~,a] =  max(Q(x(i),:));
-
-        c=rand;if c<eps, a=a; else a=randi(3);end
-
-        eps=eps+(1-eps0)/N;
-
-        x(i+1)=x(i)+(a-2)*randsrc(1,1,[1 -1;pfwd  1-pfwd]) ; % motion of human based on action
-
-            if x(i+1)>=20, x(i+1)=20;end
-
-        if x(i+1)<=1, x(i+1)=1;end
-
+for xT = 1:30
+    for k=1:1000
     
-
-        [~,a_next] = max(Q(x(i+1),:));  % get future action
-
-        if abs(x(i+1)-xT)< abs(x(i)-xT), r(i)=0;
-
-        else r(i)=-1; end
-
-        Q(x(i),a)=Q(x(i),a)+alp*(r(i)-gam*Q(x(i+1),a_next)-Q(x(i),a));
-
-        xold(k,i)=x(i);
-
+        x_ini=randi(20)
+    
+        pfwd=0.7;
+    
+        alp=0.31;
+    
+        gam=0.1;
+    
+        eps0=1;eps=eps0;
+    
+        N=540;
+    
+        x(1)=x_ini;
+    
+        for i=1:N,
+    
+            % chose an action from state x(i)
+    
+            [~,a] =  max(Q(xT,x(i),:));
+    
+            c=rand;if c<eps, a=a; else a=randi(3);end
+    
+            eps=eps+(1-eps0)/N;
+    
+            x(i+1)=x(i)+(a-2)*randsrc(1,1,[1 -1;pfwd  1-pfwd]) ; % motion of human based on action
+    
+                if x(i+1)>=20, x(i+1)=20;end
+    
+            if x(i+1)<=1, x(i+1)=1;end
+    
+        
+    
+            [~,a_next] = max(Q(xT,x(i+1),:));  % get future action
+    
+            if abs(x(i+1)-xT)< abs(x(i)-xT), r(i)=0;
+    
+            else r(i)=-1; end
+    
+            Q(xT,x(i),a)=Q(xT,x(i),a)+alp*(r(i)-gam*Q(xT,x(i+1),a_next)-Q(xT,x(i),a));
+    
+            xold(k,i)=x(i);
+    
+        end
+    
+        
+    
     end
-
-    
-
 end
+save('Q_table.mat','Q');
 
-x(1)=randi(20); %randi([min(xold) max(xold)]);
+x(1)=randi(30); %randi([min(xold) max(xold)]);
 
- 
+ %{
 
 for i=1:N,
 
@@ -82,8 +82,8 @@ for i=1:N,
     Q(x(i),a)=Q(x(i),a)+alp*(r(i)-gam*Q(x(i+1),a_next)-Q(x(i),a));
 
 end
+ %}
 
-save('Q_table.mat','Q');
 
 %figure; hold
 

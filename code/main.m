@@ -14,11 +14,11 @@ title('Serial Data','FontSize',12); xlabel('Elapsed Time (s)','FontSize',9); yla
 Time = zeros(1,10000); Filtered  = zeros(size(Time)); Controlled = zeros(size(Time)); 
 fwrite(S,0,'async'); 
 
-Q=rand(4500,3);
+Q=rand(30,3);
 xold = [];
 
 
-xT= round(3700*rand(20,1)+500); %Specific target location in inches
+xT= round(23*rand(20,1)+4); %Specific target location in inches
 
 for k=1:length(xT) % Number of Episodes
     Plot = animatedline('LineWidth',1,'Color','b'); grid on; box on; 
@@ -48,15 +48,28 @@ for k=1:length(xT) % Number of Episodes
         [~, a] = max(Q(round(x(i)), :));
 
         movement(a,S);
-        
-        %pause(0.1); %Allows some time for movement before checking the sensor
 
         % Read the updated state from the sensor
         x(i+1) = state(S,0);
 
         % Update the Q-table using the Q-learning update rule
         [~, a_next] = max(Q(round(x(i+1)), :));
-        
+
+        %Holds current action until user holds in place for some time
+        last_state = -1;
+        count = 0;
+        while true
+            current = state(S,a);
+            if abs(current - last_state) < 1
+                count = count + 1;
+                if count > 25
+                    break;
+                end
+            end
+            last_state = current;
+        end
+
+
         % Calculate the reward
         if abs(x(i+1)-xT(k))< abs(x(i)-xT(k))
             r(i) = 0;
@@ -68,7 +81,9 @@ for k=1:length(xT) % Number of Episodes
 
         xold(k, i) = x(i);
 
-        at_target = abs(x(i+1) - xT(k)) < 500; %Determines if the current position is close enough to the target
+        
+
+        at_target = abs(x(i+1) - xT(k)) < 1; %Determines if the current position is close enough to the target
         
         % Check to see if we are outside the range or not
         if at_target
@@ -83,7 +98,7 @@ for k=1:length(xT) % Number of Episodes
         Time(i) = toc;
         addpoints(Plot,Time(i),x(i)); 
         addpoints(Plot2,Time(i),xT(k));
-        axis([toc-10 toc+1 -10 10000]); % Axis based on elapsed time
+        axis([toc-10 toc+1 0 30]); % Axis based on elapsed time
         pause(0.01);
     end
     delete(Plot);
@@ -97,7 +112,7 @@ end
 for i= 1:N
     [~,a] = max(Q(round(x(i)),:));
 
-    movement(a)
+    movement(a,S)
 
     % duration = fread(S,1,'float'); % Read 4 bytes (32 bits) from the Microcontroller
     % fwrite(S,0,'uint8');

@@ -9,7 +9,7 @@ title('Serial Data','FontSize',12); xlabel('Elapsed Time (s)','FontSize',9); yla
 Time = zeros(1,10000); Error = zeros(size(Time)); Filtered  = zeros(size(Time)); Controlled = zeros(size(Time)); 
 fwrite(S,0,'async'); tic % Start the communication and the stopwatch timer
 for i = 1:length(Time)
-   Error(i) = fread(S,1,'float');
+   Error(i) = fread(S,1,'float')*0.0135/2;
    Filtered(i) = Error(i); % Filter
    Controlled(i) = Filtered(i); % Controller
    if mod(round(i/25),2) == 0
@@ -19,7 +19,7 @@ for i = 1:length(Time)
    end
    Time(i) = toc;
    addpoints(Plot,Time(i),Error(i)); 
-   axis([toc-10 toc+1 -10 4500]); % Axis based on elapsed time
+   axis([toc-10 toc+1 0 30]); % Axis based on elapsed time
    pause(0.01);
 end
 fclose(S);
