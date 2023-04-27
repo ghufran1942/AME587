@@ -16,9 +16,9 @@ fwrite(S,0,'async');
 
 % Q=rand(30,3);
 % save("Q_Random.mat","Q")
-Q = importdata("enikov_trained_Q_table.mat");
+%Q = importdata("../Q_table.mat");
 xold = [];
-%Q = rand(30,3);
+Q = rand(30,3);
 Q_old = Q;
 %xT= round(23*rand(20,1)+4); %Specific target location in inches
 xT = 15;
@@ -75,7 +75,7 @@ for k=1:20 % Number of Episodes
         if abs(x(i+1)-xT) < abs(x(i)-xT) || at_target
             r(i) = 1;
         else
-            r(i) = 0;
+            r(i) = -1;
         end
 
         Q(round(x(i)),a)=Q(round(x(i)),a) + alp*(r(i)-gam*Q(round(x(i+1)),a_next) - Q(round(x(i)),a));
@@ -102,10 +102,7 @@ for k=1:20 % Number of Episodes
     delete(Plot);
     delete(Plot2);
     movement(2,S);
-    disp('Next Round')
-    beep on
-    pause(1);
-    beep off
+    beep
 
 end
 figure(2);

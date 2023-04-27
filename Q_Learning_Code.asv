@@ -17,12 +17,11 @@ kMax=1000;
 r = zeros(1, N);
 xold=zeros(kMax,N);
 x=zeros(1,N);
-%for xT = 15:16
-    xT = 15;
+for xT = 15:16
     for k=1:kMax
     
         x_ini=randi(30)
-        
+    
         
     
         eps0=1;
@@ -40,7 +39,7 @@ x=zeros(1,N);
             c=rand;
             if c>eps, a=a; else, a=randi(3);end
     
-            eps=eps+(1-eps0)/N;
+            eps=eps+(-0-eps0)/N;
     
             x(i+1)=x(i)+(a-2)*randsrc(1,1,[1 -1;pfwd  1-pfwd]) ; % motion of human based on action
     
@@ -67,11 +66,11 @@ x=zeros(1,N);
             xold(k,i)=x(i);
     
         end
-        alp = alp + (1-)
+    
         
     
     end
-%end
+end
 save('Q_table_2.mat','Q');
 
 x(1)=randi(30); %randi([min(xold) max(xold)]);
