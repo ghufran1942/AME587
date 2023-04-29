@@ -4,7 +4,7 @@ function state = state(Serial,Output)
     state = duration * 0.0135 / 2; % Distance in inches
     if state > 30
         state = 30;
-    elseif state < 0
-        state = 0;
+    elseif state < 1
+        state = 1;
     end
 end
