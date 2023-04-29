@@ -127,12 +127,11 @@ int initialization(){
     PSTRCON = 0b00010000;           //steering update at beginning
     
     // BANK2
-    ANSEL  = 0b00000000;            // All pins digital except pin AN0
+    ANSEL  = 0b00000000;            // All pins digital
     ANSELH = 0b00000000;            // All pins digital
     
     // BANK1
     OSCCON = 0b01110000;            // Setting Oscillator to do 8MHz
-//    ADCON1 = 0b01010000;            // Select ADC Clock to FOSC/16
     TRISA = 0b00000100;            // Input: pin AN0 pin A2 as digital input
     TRISB = 0b00010000;             // Input: RB4
     TRISC  = 0b00000000;            // Output: all pins
@@ -146,16 +145,6 @@ int initialization(){
     SPBRG = 25;                     // Set baud rate timer period
     
     // BANK0
-    //ADCON0
-//    ADON = 1;                       // Enable ADC conversion
-//    GO = 0;                         // Stop any conversion
-
-    //ADC to AN0
-//    CHS0 = 0;
-//    CHS1 = 0;
-//    CHS2 = 0;
-//    CHS3 = 0;
-//    ADFM = 0;                       // Left Justify ADRESH ADRESL
     //CCP1CON; P1A-D all active high, PWM cycle least sig bits, PWM half bridge
     CCP1CON = 0b00001100;
     PR2 = 255;
