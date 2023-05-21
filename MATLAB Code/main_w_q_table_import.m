@@ -16,13 +16,13 @@ fwrite(S,0,'async');
 
 % Q=rand(30,3);
 % save("Q_Random.mat","Q")
-Q = importdata("data/Q_table_after_eps_60.mat");
+Q = importdata("data/Q_table_after_eps_100.mat");
 xold = [];
 Q_old = Q;
 %xT= round(23*rand(20,1)+4); %Specific target location in inches
 xT = 15;
 %xT = 10*ones(20,1);
-for k=61:80 % Number of Episodes
+for k=101:120 % Number of Episodes
     disp('Starting Next Round')
     pause(1);
     Plot = animatedline('LineWidth',1,'Color','b'); grid on; box on; 
