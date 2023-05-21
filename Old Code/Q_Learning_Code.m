@@ -67,12 +67,12 @@ x=zeros(1,N);
             xold(k,i)=x(i);
     
         end
-        alp = alp + (1-)
+        alp = alp + (1-eps)
         
-    
+    save(sprintf('data/Q_table_after_eps_%d',k),'Q');
     end
 %end
-save('Q_table_2.mat','Q');
+
 
 x(1)=randi(30); %randi([min(xold) max(xold)]);
 

@@ -16,14 +16,15 @@ fwrite(S,0,'async');
 
 % Q=rand(30,3);
 % save("Q_Random.mat","Q")
-Q = importdata("trained_Q_table.mat");
+Q = importdata("data/Q_table_after_eps_60.mat");
 xold = [];
-% Q = rand(30,3);
 Q_old = Q;
 %xT= round(23*rand(20,1)+4); %Specific target location in inches
 xT = 15;
 %xT = 10*ones(20,1);
-for k=1:2 % Number of Episodes
+for k=61:80 % Number of Episodes
+    disp('Starting Next Round')
+    pause(1);
     Plot = animatedline('LineWidth',1,'Color','b'); grid on; box on; 
     Plot2 = animatedline('LineWidth',1,'Color','g'); grid on; box on; 
     pfwd=0.7;
@@ -89,6 +90,7 @@ for k=1:2 % Number of Episodes
             exitRun = 0;
         end
         if exitRun >= 2 %Exits the loop early if the user stays within the bounds for ~2 seconds
+            disp("Reached Target")
             break;
         end
 
@@ -98,7 +100,8 @@ for k=1:2 % Number of Episodes
         axis([toc-10 toc+1 0 30]); % Axis based on elapsed time
         pause(0.01);
     end
-    save('trained_Q_table.mat','Q');
+
+    save(sprintf('data/Q_table_after_eps_%d',k),'Q');
     delete(Plot);
     delete(Plot2);
     movement(2,S);
@@ -110,9 +113,10 @@ for k=1:2 % Number of Episodes
 end
 figure(2);
 bar3(Q);
-title('Updated Q-table: 2 rounds');
+title(sprintf('Updated Q-table: After %d rounds',k));
 figure(3);
-bar3(Q_old);
+% bar3(Q_old);
+bar3(importdata("Q_Random.mat"))
 title('Initial Q-table');
 w = waitforbuttonpress;
 

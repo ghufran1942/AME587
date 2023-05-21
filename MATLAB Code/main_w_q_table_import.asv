@@ -6,7 +6,7 @@
 
 clc; clear; close all 
 delete(instrfind()); % Clear serial port
-S = serial('COM7'); % Serial port configuration
+S = serial('COM4'); % Serial port configuration
 set(S,'BaudRate',19200,'InputBufferSize',4); % Set Baud Rate = 19200 and Number of Bytes = 2, same as Microcontroller
 fopen(S); % Open serial port
 figure('units','normalized','outerposition',[0.2 0.2 0.5 0.7]); set(gcf,'color','w'); 
@@ -16,14 +16,13 @@ fwrite(S,0,'async');
 
 % Q=rand(30,3);
 % save("Q_Random.mat","Q")
-%Q = importdata("../Q_table.mat");
+Q = importdata("data/Q_table_after_eps_2.mat");
 xold = [];
-Q = rand(30,3);
 Q_old = Q;
 %xT= round(23*rand(20,1)+4); %Specific target location in inches
 xT = 15;
 %xT = 10*ones(20,1);
-for k=1:20 % Number of Episodes
+for k=3:20 % Number of Episodes
     Plot = animatedline('LineWidth',1,'Color','b'); grid on; box on; 
     Plot2 = animatedline('LineWidth',1,'Color','g'); grid on; box on; 
     pfwd=0.7;
@@ -53,7 +52,7 @@ for k=1:20 % Number of Episodes
         % Read the updated state from the sensor
         x(i+1) = state(S,0);
 
-        % Update the Q-table using the Q-learning update rule
+        % Update the Q-table using the Q-learning update rule   
         [~, a_next] = max(Q(round(x(i+1)), :));
 
         %Holds current action until user holds in place for some time
@@ -75,7 +74,7 @@ for k=1:20 % Number of Episodes
         if abs(x(i+1)-xT) < abs(x(i)-xT) || at_target
             r(i) = 1;
         else
-            r(i) = -1;
+            r(i) = 0;
         end
 
         Q(round(x(i)),a)=Q(round(x(i)),a) + alp*(r(i)-gam*Q(round(x(i+1)),a_next) - Q(round(x(i)),a));
@@ -98,15 +97,23 @@ for k=1:20 % Number of Episodes
         axis([toc-10 toc+1 0 30]); % Axis based on elapsed time
         pause(0.01);
     end
-    save('enikov_trained_Q_table.mat','Q');
+
+    save(sprintf('data/Q_table_after_eps_%d',k),'Q');
     delete(Plot);
     delete(Plot2);
     movement(2,S);
-    beep
+    disp('Next Round')
+    beep on
+    pause(1);
+    beep off
 
 end
 figure(2);
 bar3(Q);
+title('Updated Q-table: %d rounds',k);
+figure(3);
+bar3(Q_old);
+title('Initial Q-table');
 w = waitforbuttonpress;
 
 movement(2,S)
@@ -114,35 +121,35 @@ pause(2)
 
 % Testing Code
 
-for i= 1:N
-    [~,a] = max(Q(round(x(i)),:));
-
-    movement(a,S)
-
-    % duration = fread(S,1,'float'); % Read 4 bytes (32 bits) from the Microcontroller
-    % fwrite(S,0,'uint8');
-    % x(i+1) = duration * 0.0135 / 2; 
-
-    x(i+1) = state(S,0);
-
-    at_target = round(x(i+1)) == xT;
-
-    % Calculate the reward
-    if abs(x(i+1)-xT)< abs(x(i)-xT)
-        r(i) = 0;
-    else
-        r(i) = -1;
-    end
-
-    [~, a_next] = max(Q(round(x(i+1)), :));
-    Q(round(x(i)),a)=Q(round(x(i)),a)+alp*(r(i)-gam*Q(round(x(i+1)),a_next)-Q(round(x(i)),a));
-
-    if at_target
-        break;
-    end
-
-
-end
+% for i= 1:N
+%     [~,a] = max(Q(round(x(i)),:));
+% 
+%     movement(a,S)
+% 
+%     % duration = fread(S,1,'float'); % Read 4 bytes (32 bits) from the Microcontroller
+%     % fwrite(S,0,'uint8');
+%     % x(i+1) = duration * 0.0135 / 2; 
+% 
+%     x(i+1) = state(S,0);
+% 
+%     at_target = round(x(i+1)) == xT;
+% 
+%     % Calculate the reward
+%     if abs(x(i+1)-xT)< abs(x(i)-xT)
+%         r(i) = 0;
+%     else
+%         r(i) = -1;
+%     end
+% 
+%     [~, a_next] = max(Q(round(x(i+1)), :));
+%     Q(round(x(i)),a)=Q(round(x(i)),a)+alp*(r(i)-gam*Q(round(x(i+1)),a_next)-Q(round(x(i)),a));
+% 
+%     if at_target
+%         break;
+%     end
+% 
+% 
+% end
 
 %%Plotting/Communication section
 fclose(S);
