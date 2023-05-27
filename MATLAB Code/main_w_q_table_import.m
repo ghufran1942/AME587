@@ -44,7 +44,6 @@ for k=1:40 % Number of Episodes
     % High Alpha
     alp = 0.9
 
-
     % Epsilon is Decreasing Exponential
     eps = exp(-k/100)
 
@@ -109,7 +108,7 @@ for k=1:40 % Number of Episodes
             r(i) = 0;
         end
 
-        Q(round(x(i)),a)=Q(round(x(i)),a) + alp*(r(i)-gam*Q(round(x(i+1)),a_next) - Q(round(x(i)),a));
+        Q(round(x(i)),a)=Q(round(x(i)),a) + alp*(r(i)+gam*Q(round(x(i+1)),a_next) - Q(round(x(i)),a));
 
         xold(k, i) = x(i);
         
