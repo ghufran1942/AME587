@@ -67,7 +67,7 @@ x=zeros(1,N);
             xold(k,i)=x(i);
     
         end
-        alp = alp + (1-eps)
+        alp = alp + (1-eps);
         
     save(sprintf('data/Q_table_after_eps_%d',k),'Q');
     end
