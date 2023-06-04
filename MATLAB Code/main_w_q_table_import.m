@@ -14,26 +14,33 @@ title('Serial Data','FontSize',12); xlabel('Elapsed Time (s)','FontSize',9); yla
 Time = zeros(1,10000); Filtered  = zeros(size(Time)); Controlled = zeros(size(Time)); 
 fwrite(S,0,'async'); 
 
+% % Generate Random Q Table
 % Q=rand(30,3);
 % save("Q_Random.mat","Q")
+
+% % Import Q Table
 Q = importdata("Q_Random.mat");
-% Q = importdata("3_Low_Alpha_Decreasing_Eps/Q_table_with_eps_rate_exp(-k100)_27.mat");
-xold = [];
-Q_old = Q;
+FOLDER = '5_High_Alpha_Decreasing_Eps';
+episode = 10;
+% location = sprintf('%s/Q_table_with_eps_rate_exp(-k100)_%d.mat',FOLDER,episode);
+% Q = importdata(location);
+
+location = sprintf('%s/Trajectory_eps_%d.mat',FOLDER,episode);
+xold = importdata(location);
 %xT= round(23*rand(20,1)+4); %Specific target location in inches
-xT = 15;
+xT = 15; % Target
 %xT = 10*ones(20,1);
 
 eps=1;
 for k=1:40 % Number of Episodes
     disp('Starting Next Round')
-    pause(1);
+    pause(2);
     Plot = animatedline('LineWidth',1,'Color','b'); grid on; box on; 
     Plot2 = animatedline('LineWidth',1,'Color','g'); grid on; box on; 
     pfwd=0.7;
     
     % Fixed Alpha
-%     alp= 0.31
+    alp = 0.31
     
     % Low Alpha
 %     alp = 0.1
@@ -42,7 +49,7 @@ for k=1:40 % Number of Episodes
 %     alp = 0.5
 
     % High Alpha
-    alp = 0.9
+%     alp = 0.9
 
     % Epsilon is Decreasing Exponential
     eps = exp(-k/100)
@@ -129,16 +136,16 @@ for k=1:40 % Number of Episodes
         axis([toc-10 toc+1 0 30]); % Axis based on elapsed time
         pause(0.01);
     end
-
-    save(sprintf('5_High_Alpha_Decreasing_Eps/Q_table_with_eps_rate_exp(-k100)_%d',k),'Q');
+    save(sprintf('%s/Trajectory_eps_%d',FOLDER,k),'xold');
+    save(sprintf('%s/Q_table_with_eps_rate_exp(-k100)_%d',FOLDER,k),'Q');
     delete(Plot);
     delete(Plot2);
     movement(2,S);
+    disp('=============================================================')
     disp('Next Round')
     beep on
     pause(1);
     beep off
-
 end
 figure(2);
 bar3(Q);
@@ -147,6 +154,24 @@ figure(3);
 % bar3(Q_old);
 bar3(importdata("Q_Random.mat"))
 title('Initial Q-table');
+
+% % Trajectories Plot
+figure(4);
+file_path = sprintf('%s/trajectory_eps_%d.mat',FOLDER,k);
+trajectories = importdata(file_path);
+hold on;
+for i=1:10
+    plot(trajectories(i,:))
+end
+hold off
+% plot(x,'r')
+xlabel('Time, t');ylabel('State,s(t)')
+
+for i=1:10
+    plot(trajectories(k,:))
+end
+hold off
+
 w = waitforbuttonpress;
 
 movement(2,S)

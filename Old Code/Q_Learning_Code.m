@@ -1,6 +1,7 @@
 
 clc;
 clear;
+clear all;
 
 Q=rand(30,30,3);
 % save("Q_Random.mat","Q")
@@ -11,7 +12,7 @@ pfwd=0.7;
 alp=0.31;
 gam=0.1;
 N=540;
-kMax=1000;
+kMax=10;
 
 % Allocating array sizes
 r = zeros(1, N);
@@ -21,10 +22,9 @@ x=zeros(1,N);
     xT = 15;
     for k=1:kMax
     
-        x_ini=randi(30)
-        
-        
-    
+        x_ini=randi(30);
+        disp('Epsiode: ')
+        k
         eps0=1;
         eps=eps0;
     
@@ -68,7 +68,7 @@ x=zeros(1,N);
     
         end
         alp = alp + (1-eps);
-        
+    save(sprintf('data/Trajectory_eps_%d',k),'xold');
     save(sprintf('data/Q_table_after_eps_%d',k),'Q');
     end
 %end
@@ -107,22 +107,33 @@ end
 %stairs(xold,'b');stairs(x);legend('Training Data','Trained Sys. w New IC-s.');shg
 
  
+figure(4);
+file_path = sprintf('data/trajectory_eps_%d.mat',k);
+trajectories = importdata(file_path);
 
-figure
-
-hold
-
-for k=1:10,plot(xold(k,:));end
-
-plot(x,'r')
-xlim([0 21])
-
-legend({'Training data','Training data','Training data','Training data','Training data','Training data','Training data','Training data','Training data','Training data', 'Trained'})
-
+hold on;
+for i=1:10
+    plot(trajectories(i,:))
+end
+hold off
+% plot(x,'r')
 xlabel('Time, t');ylabel('State,s(t)')
 
-shg
-
-figure
-
-bar3(Q+1);shg
+% figure
+% 
+% hold
+% 
+% for k=1:10,plot(xold(k,:));end
+% 
+% plot(x,'r')
+% xlim([0 21])
+% 
+% legend({'Training data','Training data','Training data','Training data','Training data','Training data','Training data','Training data','Training data','Training data', 'Trained'})
+% 
+% xlabel('Time, t');ylabel('State,s(t)')
+% 
+% shg
+% 
+% figure
+% 
+% bar3(Q+1);shg
