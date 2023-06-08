@@ -20,13 +20,14 @@ fwrite(S,0,'async');
 
 % % Import Q Table
 Q = importdata("Q_Random.mat");
-FOLDER = '5_High_Alpha_Decreasing_Eps';
-episode = 10;
+% Q = zeros(30,3);
+FOLDER = '6_data';
+% episode = 10;
 % location = sprintf('%s/Q_table_with_eps_rate_exp(-k100)_%d.mat',FOLDER,episode);
 % Q = importdata(location);
 
-location = sprintf('%s/Trajectory_eps_%d.mat',FOLDER,episode);
-xold = importdata(location);
+% file_location = sprintf('%s/Trajectory_eps_%d.mat',FOLDER,episode);
+% xold = importdata(location);
 %xT= round(23*rand(20,1)+4); %Specific target location in inches
 xT = 15; % Target
 %xT = 10*ones(20,1);
@@ -109,8 +110,13 @@ for k=1:40 % Number of Episodes
 
         at_target = abs(x(i+1) - xT) < 1; %Determines if the current position is close enough to the target
         % Calculate the reward
-        if abs(x(i+1)-xT) < abs(x(i)-xT) || at_target
+        if at_target
+            r(i) = 10;
+            a = 2;
+        elseif abs(x(i+1)-xT) < abs(x(i)-xT)
             r(i) = 1;
+        elseif abs(x(i+1)-xT) >= abs(x(i)-xT)
+            r(i) = -1;
         else
             r(i) = 0;
         end

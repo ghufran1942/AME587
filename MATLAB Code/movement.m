@@ -14,7 +14,7 @@ end
 
 function move_sensor_left(S)
     fread(S,1,'float');
-    fwrite(S,45,'uint8'); % Send 1 byte back to the Microcontroller
+    fwrite(S,55,'uint8'); % Send 1 byte back to the Microcontroller
 end
 
 function move_sensor_right(S)
